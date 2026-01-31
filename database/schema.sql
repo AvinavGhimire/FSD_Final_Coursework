@@ -105,4 +105,4 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Default admin user (password: admin123)
-INSERT INTO users (name, email, password) VALUES ('Admin', 'admin@fitness.com', '$2y$10$pJSXe3GM2zsKf/fGm3u.QuJqZa2D/4AvYmZGnZOMbLb38t5T4/Zoy');
+INSERT INTO users (name, email, password) VALUES ('Admin', 'admin@fitness.com', '$argon2id$v=19$m=19456,t=2,p=1$MjJkMWQ4MjAxZGRiODdkM2VkMDFiMzQxZjUxMWYyYjg$PExZ9PnB32Nmu7iYhGn//cKPU7+6KVPyXDtyCEDTgHI');
