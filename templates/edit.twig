@@ -1,0 +1,143 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>{{ type == 'member' ? 'Edit Member' : 'Edit Trainer' }}</h2>
+    <a href="/genz/public/index.php" class="btn btn-secondary">Back to List</a>
+</div>
+
+{% if success %}
+    <div class="alert alert-success">
+        <p>{{ type == 'member' ? 'Member' : 'Trainer' }} updated successfully! <a href="/genz/public/index.php">View all members</a></p>
+    </div>
+{% endif %}
+
+{% if errors|length > 0 %}
+    <div class="alert alert-error">
+        <ul>
+            {% for error in errors %}
+            <li>{{ error|e }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{% if type == 'member' %}
+<form method="POST" action="/genz/public/edit.php?type=member&id={{ id|e('url') }}" class="book-form" id="editMemberForm" data-email-type="member" data-exclude-id="{{ id }}">
+    <div class="form-group">
+        <label for="first_name">First Name <span class="required">*</span></label>
+        <input type="text" id="first_name" name="first_name" value="{{ item.first_name|e('html_attr') }}" required>
+    </div>
+    <div class="form-group">
+        <label for="last_name">Last Name <span class="required">*</span></label>
+        <input type="text" id="last_name" name="last_name" value="{{ item.last_name|e('html_attr') }}" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <input type="email" id="email" name="email" value="{{ item.email|e('html_attr') }}" required>
+        <span class="email-check-hint" id="edit-member-email-hint" aria-live="polite"></span>
+    </div>
+    <div class="form-group">
+        <label for="phone">Phone <span class="required">*</span></label>
+        <input type="text" id="phone" name="phone" value="{{ item.phone|e('html_attr') }}" required>
+    </div>
+    <div class="form-group">
+        <label for="membership_type">Membership Type <span class="required">*</span></label>
+        <select id="membership_type" name="membership_type" required>
+            <option value="">Select membership type</option>
+            <option value="Basic" {{ item.membership_type == 'Basic' ? 'selected' : '' }}>Basic</option>
+            <option value="Standard" {{ item.membership_type == 'Standard' ? 'selected' : '' }}>Standard</option>
+            <option value="Premium" {{ item.membership_type == 'Premium' ? 'selected' : '' }}>Premium</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="membership_start_date">Membership Start Date <span class="required">*</span></label>
+        <input type="date" id="membership_start_date" name="membership_start_date"
+               value="{{ (item.membership_start_date and item.membership_start_date != '0000-00-00') ? item.membership_start_date|e('html_attr') : '' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="membership_expiry_date">Membership Expiry Date <span class="required">*</span></label>
+        <input type="date" id="membership_expiry_date" name="membership_expiry_date"
+               value="{{ (item.membership_expiry_date and item.membership_expiry_date != '0000-00-00') ? item.membership_expiry_date|e('html_attr') : '' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="Active" {{ item.status == 'Active' ? 'selected' : '' }}>Active</option>
+            <option value="Expired" {{ item.status == 'Expired' ? 'selected' : '' }}>Expired</option>
+            <option value="Suspended" {{ item.status == 'Suspended' ? 'selected' : '' }}>Suspended</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="date_of_birth">Date of Birth</label>
+        <input type="date" id="date_of_birth" name="date_of_birth"
+               value="{{ (item.date_of_birth and item.date_of_birth != '0000-00-00') ? item.date_of_birth|e('html_attr') : '' }}">
+    </div>
+    <div class="form-group">
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="3">{{ item.address|default('')|e }}</textarea>
+    </div>
+    <div class="form-group">
+        <label for="emergency_contact_name">Emergency Contact Name</label>
+        <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="{{ item.emergency_contact_name|default('')|e('html_attr') }}">
+    </div>
+    <div class="form-group">
+        <label for="emergency_contact_phone">Emergency Contact Phone</label>
+        <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="{{ item.emergency_contact_phone|default('')|e('html_attr') }}">
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Update Member</button>
+        <a href="/genz/public/index.php" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% else %}
+<form method="POST" action="/genz/public/edit.php?type=trainer&id={{ id|e('url') }}" class="book-form" id="editTrainerForm" data-email-type="trainer" data-exclude-id="{{ id }}">
+    <div class="form-group">
+        <label for="first_name">First Name <span class="required">*</span></label>
+        <input type="text" id="first_name" name="first_name" value="{{ item.first_name|e('html_attr') }}" required>
+    </div>
+    <div class="form-group">
+        <label for="last_name">Last Name <span class="required">*</span></label>
+        <input type="text" id="last_name" name="last_name" value="{{ item.last_name|e('html_attr') }}" required>
+    </div>
+    <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <input type="email" id="email" name="email" value="{{ item.email|e('html_attr') }}" required>
+        <span class="email-check-hint" id="edit-trainer-email-hint" aria-live="polite"></span>
+    </div>
+    <div class="form-group">
+        <label for="phone">Phone <span class="required">*</span></label>
+        <input type="text" id="phone" name="phone" value="{{ item.phone|e('html_attr') }}" required>
+    </div>
+    <div class="form-group">
+        <label for="specialization">Specialization</label>
+        <input type="text" id="specialization" name="specialization" value="{{ item.specialization|default('')|e('html_attr') }}">
+    </div>
+    <div class="form-group">
+        <label for="experience_years">Years of Experience</label>
+        <input type="number" id="experience_years" name="experience_years" value="{{ item.experience_years|default('')|e('html_attr') }}" min="0">
+    </div>
+    <div class="form-group">
+        <label for="certification">Certification</label>
+        <input type="text" id="certification" name="certification" value="{{ item.certification|default('')|e('html_attr') }}">
+    </div>
+    <div class="form-group">
+        <label for="hire_date">Hire Date <span class="required">*</span></label>
+        <input type="date" id="hire_date" name="hire_date"
+               value="{{ (item.hire_date and item.hire_date != '0000-00-00') ? item.hire_date|e('html_attr') : '' }}" required>
+    </div>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="Active" {{ item.status == 'Active' ? 'selected' : '' }}>Active</option>
+            <option value="Inactive" {{ item.status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+        </select>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Update Trainer</button>
+        <a href="/genz/public/index.php" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endif %}
+{% endblock %}
+

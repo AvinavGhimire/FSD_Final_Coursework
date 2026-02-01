@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pageTitle|default('Fitness Club Management System')|e }}</title>
+    <link rel="stylesheet" href="/genz/public/assets/css/style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <h1 class="logo">💪 Fitness Club Management</h1>
+                <ul class="nav-menu">
+                    <li><a href="/genz/public/index.php">Members</a></li>
+                    <li><a href="/genz/public/add.php?type=member">Add Member</a></li>
+                    <li><a href="/genz/public/add.php?type=trainer">Add Trainer</a></li>
+                    <li><a href="/genz/public/workout_plans.php">Workout Plans</a></li>
+                    <li><a href="/genz/public/search.php">Search</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; {{ "now"|date("Y") }} Fitness Club Management System. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="/genz/public/assets/js/main.js"></script>
+</body>
+</html>
+

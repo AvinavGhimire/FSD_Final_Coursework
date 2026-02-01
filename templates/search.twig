@@ -1,0 +1,108 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Search Members</h2>
+    <a href="/genz/public/index.php" class="btn btn-secondary">Back to List</a>
+</div>
+
+<div class="search-container">
+    <h3 style="margin-bottom: 1rem;">Quick search by name (Ajax)</h3>
+    <div class="search-autocomplete-wrap">
+        <div class="search-input-group" id="name-search-wrap">
+            <input type="text" id="name-search" name="name_search" placeholder="Type member name or email..." autocomplete="off">
+            <button type="button" id="name-search-btn" class="btn btn-primary">Search</button>
+        </div>
+        <div id="autocomplete-dropdown" class="autocomplete-results" aria-hidden="true"></div>
+    </div>
+    <p class="search-hint">Suggestions appear as you type. Press Enter or click Search to load results without refreshing the page.</p>
+
+    <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #eee;">
+    <h3 style="margin-bottom: 1rem;">Filter by membership &amp; expiry</h3>
+    <form method="GET" action="/genz/public/search.php" class="search-form">
+        <div class="form-group">
+            <label for="membership_type">Membership Type</label>
+            <select id="membership_type" name="membership_type">
+                <option value="">All Types</option>
+                <option value="Basic" {{ membership_type == 'Basic' ? 'selected' : '' }}>Basic</option>
+                <option value="Standard" {{ membership_type == 'Standard' ? 'selected' : '' }}>Standard</option>
+                <option value="Premium" {{ membership_type == 'Premium' ? 'selected' : '' }}>Premium</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="expiry_date">Expiry Date</label>
+            <input type="date" id="expiry_date" name="expiry_date" value="{{ expiry_date|default('')|e('html_attr') }}">
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="/genz/public/search.php" class="btn btn-secondary">Clear</a>
+        </div>
+    </form>
+</div>
+
+<div id="ajax-search-results" class="ajax-results-container" style="display: none;">
+    <div class="search-results-header">
+        <h3>Search Results <span class="ajax-badge">(loaded via Ajax)</span></h3>
+        <p id="ajax-results-count"></p>
+    </div>
+    <div id="ajax-results-grid" class="books-grid"></div>
+</div>
+
+<div id="filter-search-results">
+{% if membership_type or expiry_date %}
+    <div class="search-results-header">
+        <h3>Search Results</h3>
+        {% if membership_type %}
+            <p><strong>Membership Type:</strong> {{ membership_type|e }}</p>
+        {% endif %}
+        {% if expiry_date %}
+            <p><strong>Expiry Date:</strong> {{ formatDate(expiry_date) }}</p>
+        {% endif %}
+        <p>{{ members|length }} member(s) found</p>
+    </div>
+    {% if members is empty %}
+        <div class="alert alert-info">
+            <p>No members found matching your search criteria.</p>
+        </div>
+    {% else %}
+        <div class="books-grid">
+            {% for member in members %}
+            <div class="book-card">
+                <div class="book-header">
+                    <h3>{{ (member.first_name ~ ' ' ~ member.last_name)|e }}</h3>
+                    <span class="book-id">#{{ member.id|e }}</span>
+                </div>
+                <div class="book-details">
+                    <p><strong>Email:</strong> {{ member.email|e }}</p>
+                    <p><strong>Phone:</strong> {{ member.phone|e }}</p>
+                    <p><strong>Membership Type:</strong> <span class="badge">{{ member.membership_type|e }}</span></p>
+                    <p><strong>Status:</strong>
+                        <span class="badge {{ member.status|lower }}">{{ member.status|e }}</span>
+                    </p>
+                    <p><strong>Start Date:</strong> {{ formatDate(member.membership_start_date) }}</p>
+                    <p><strong>Expiry Date:</strong>
+                        <span class="{{ isMembershipExpired(member.membership_expiry_date) ? 'text-danger' : '' }}">
+                            {{ formatDate(member.membership_expiry_date) }}
+                        </span>
+                    </p>
+                </div>
+                <div class="book-actions">
+                    <a href="/genz/public/edit.php?type=member&id={{ member.id|e('url') }}" class="btn btn-sm btn-edit">Edit</a>
+                    <a href="/genz/public/delete.php?type=member&id={{ member.id|e('url') }}" class="btn btn-sm btn-delete"
+                       onclick="return confirm('Are you sure you want to delete this member?');">Delete</a>
+                    <button type="button" onclick="validateMembership({{ member.id }})" class="btn btn-sm btn-info">Validate</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% else %}
+    <div class="search-info">
+        <p>Use the filters above to search members by membership type and/or expiry date.</p>
+    </div>
+{% endif %}
+</div>
+
+<div id="validation-result" style="display:none; margin-top: 20px;"></div>
+{% endblock %}
+
