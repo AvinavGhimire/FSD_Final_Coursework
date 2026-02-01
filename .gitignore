@@ -1,0 +1,24 @@
+# Composer
+/vendor/
+
+# PHP
+*.log
+*.cache
+*.tmp
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (if you want to keep credentials private)
+# config/db.php
+
+# Uploads (if you add file upload feature)
+# uploads/
