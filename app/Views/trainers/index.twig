@@ -1,0 +1,237 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Trainers - Fitness Club Management{% endblock %}
+{% block page_title %}Trainers Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0">All Trainers</h4>
+        <p class="text-muted">Manage fitness trainers and their specializations</p>
+    </div>
+    <div>
+        <a href="/genz/public/trainers/create" class="btn btn-success">
+            <i class="bi bi-person-plus-fill"></i> Add New Trainer
+        </a>
+    </div>
+</div>
+
+<!-- Trainer Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ trainers|length }}</h3>
+                <p class="mb-0">Total Trainers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body text-center">
+                {% set activeCount = 0 %}
+                {% for trainer in trainers %}
+                    {% if trainer.status == 'Active' %}
+                        {% set activeCount = activeCount + 1 %}
+                    {% endif %}
+                {% endfor %}
+                <h3 class="text-white">{{ activeCount }}</h3>
+                <p class="mb-0">Active</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6><i class="bi bi-trophy"></i> Top Specializations</h6>
+                {% set specializations = {} %}
+                {% for trainer in trainers %}
+                    {% if trainer.specialization %}
+                        {% set specs = trainer.specialization|split(',') %}
+                        {% for spec in specs %}
+                            {% set trimmed = spec|trim %}
+                            {% if trimmed %}
+                                {% set specializations = specializations|merge({(trimmed): (specializations[trimmed]|default(0) + 1)}) %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                <div class="d-flex flex-wrap">
+                    {% for spec, count in specializations|slice(0, 6) %}
+                    <span class="badge bg-primary me-1 mb-1">{{ spec }} ({{ count }})</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Trainers Table -->
+<div class="card table-custom">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-success">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Specialization</th>
+                        <th>Experience</th>
+                        <th>Status</th>
+                        <th>Hire Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trainer in trainers %}
+                    <tr>
+                        <td><strong>#{{ trainer.id }}</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-badge fs-4 text-success me-2"></i>
+                                <div>
+                                    <strong>{{ trainer.first_name }} {{ trainer.last_name }}</strong>
+                                    {% if trainer.certification %}
+                                    <br><small class="text-muted">{{ trainer.certification }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {{ trainer.email }}<br>
+                            <small class="text-muted">{{ trainer.phone }}</small>
+                        </td>
+                        <td>
+                            {% if trainer.specialization %}
+                                {% set specs = trainer.specialization|split(',') %}
+                                {% for spec in specs|slice(0, 2) %}
+                                <span class="badge bg-info me-1">{{ spec|trim }}</span>
+                                {% endfor %}
+                                {% if specs|length > 2 %}
+                                <span class="badge bg-secondary">+{{ specs|length - 2 }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if trainer.experience_years %}
+                                <strong>{{ trainer.experience_years }}</strong> years
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if trainer.status == 'Active' %}
+                                <span class="badge bg-success">{{ trainer.status }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ trainer.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ trainer.hire_date|date("M d, Y") }}</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a href="/genz/public/trainers/view?id={{ trainer.id }}" class="btn btn-sm btn-outline-primary" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/genz/public/trainers/edit?id={{ trainer.id }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" title="Delete" 
+                                        onclick="deleteTrainer({{ trainer.id }}, '{{ trainer.first_name }} {{ trainer.last_name }}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="bi bi-person-badge fs-1 d-block mb-2 opacity-50"></i>
+                            No trainers found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Workload Stats (if available) -->
+{% if workloadStats is defined and workloadStats|length > 0 %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-up"></i> Trainer Workload</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Trainer</th>
+                                <th>Active Plans</th>
+                                <th>Avg Duration</th>
+                                <th>Workload</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in workloadStats %}
+                            <tr>
+                                <td>{{ stat.first_name }} {{ stat.last_name }}</td>
+                                <td>{{ stat.active_plans }}</td>
+                                <td>{{ stat.avg_duration ? (stat.avg_duration|round(1) ~ ' weeks') : '—' }}</td>
+                                <td>
+                                    {% set workload = stat.active_plans %}
+                                    {% if workload == 0 %}
+                                        <span class="badge bg-light text-dark">Light</span>
+                                    {% elseif workload <= 3 %}
+                                        <span class="badge bg-success">Normal</span>
+                                    {% elseif workload <= 6 %}
+                                        <span class="badge bg-warning">Busy</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Overloaded</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function deleteTrainer(id, name) {
+    if (confirm(`Are you sure you want to delete trainer "${name}"? This action cannot be undone.`)) {
+        fetch('/genz/public/trainers/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + id
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting trainer');
+        });
+    }
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,427 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Workout Plans - Fitness Club Management{% endblock %}
+{% block page_title %}Workout Plans{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0">Workout Plan Management</h4>
+        <p class="text-muted">Create and manage personalized workout plans</p>
+    </div>
+    <a href="/genz/public/workout-plans/create" class="btn btn-primary">
+        <i class="bi bi-plus"></i> New Workout Plan
+    </a>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="/genz/public/workout-plans" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Search Plans</label>
+                <input type="text" class="form-control" name="search" value="{{ searchTerm|default('') }}" 
+                       placeholder="Plan name, member, trainer...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Trainer</label>
+                <select class="form-select" name="trainer_id">
+                    <option value="">All Trainers</option>
+                    {% for trainer in trainers %}
+                    <option value="{{ trainer.id }}" {% if selectedTrainer == trainer.id %}selected{% endif %}>
+                        {{ trainer.first_name }} {{ trainer.last_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    <option value="">All Status</option>
+                    <option value="active" {% if selectedStatus == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if selectedStatus == 'inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="completed" {% if selectedStatus == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Date Range</label>
+                <select class="form-select" name="date_range">
+                    <option value="">All Dates</option>
+                    <option value="this_week" {% if selectedDateRange == 'this_week' %}selected{% endif %}>This Week</option>
+                    <option value="this_month" {% if selectedDateRange == 'this_month' %}selected{% endif %}>This Month</option>
+                    <option value="last_month" {% if selectedDateRange == 'last_month' %}selected{% endif %}>Last Month</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                <a href="/genz/public/workout-plans" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ stats.total_plans|default(0) }}</h3>
+                <p class="mb-0">Total Plans</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ stats.active_plans|default(0) }}</h3>
+                <p class="mb-0">Active Plans</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card warning">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ stats.plans_this_month|default(0) }}</h3>
+                <p class="mb-0">This Month</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ stats.completed_plans|default(0) }}</h3>
+                <p class="mb-0">Completed</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workout Plans Table -->
+<div class="card table-custom">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="mb-0">
+            <i class="bi bi-clipboard-check"></i> 
+            Workout Plans ({{ workoutPlans|length }} of {{ totalPlans|default(0) }})
+        </h6>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-funnel"></i> View Options
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="?view=grid">Grid View</a></li>
+                <li><a class="dropdown-item" href="?view=table">Table View</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="?export=excel">Export to Excel</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="workoutPlansTable">
+                <thead class="table-primary">
+                    <tr>
+                        <th>
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                        <th>Plan Details</th>
+                        <th>Member</th>
+                        <th>Trainer</th>
+                        <th>Duration</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plan in workoutPlans %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="form-check-input plan-checkbox" value="{{ plan.id }}">
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ plan.plan_name }}</strong><br>
+                                <small class="text-muted">{{ plan.plan_description|slice(0, 60) }}{% if plan.plan_description|length > 60 %}...{% endif %}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-circle fs-5 text-primary me-2"></i>
+                                <div>
+                                    <strong>{{ plan.member_name }}</strong><br>
+                                    <small class="text-muted">{{ plan.member_email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-badge fs-5 text-success me-2"></i>
+                                <div>
+                                    <strong>{{ plan.trainer_name }}</strong><br>
+                                    <small class="text-muted">{{ plan.trainer_specialization }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ plan.start_date|date("M d") }} - {{ plan.end_date|date("M d, Y") }}</strong><br>
+                                {% set duration = date(plan.end_date).diff(date(plan.start_date)).days + 1 %}
+                                <small class="text-muted">{{ duration }} days</small>
+                            </div>
+                        </td>
+                        <td>
+                            {% if plan.status == 'Active' %}
+                                {% set today = date() %}
+                                {% set startDate = date(plan.start_date) %}
+                                {% set endDate = date(plan.end_date) %}
+                                
+                                {% if today < startDate %}
+                                    <span class="badge bg-info">Upcoming</span>
+                                {% elseif today > endDate %}
+                                    <span class="badge bg-secondary">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-success">Active</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set today = date() %}
+                            {% set startDate = date(plan.start_date) %}
+                            {% set endDate = date(plan.end_date) %}
+                            {% set totalDays = endDate.diff(startDate).days + 1 %}
+                            {% set daysPassed = today.diff(startDate).days + 1 %}
+                            
+                            {% if daysPassed < 0 %}
+                                {% set progress = 0 %}
+                            {% elseif daysPassed > totalDays %}
+                                {% set progress = 100 %}
+                            {% else %}
+                                {% set progress = (daysPassed / totalDays * 100)|round %}
+                            {% endif %}
+                            
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-{% if progress == 100 %}success{% elseif progress > 70 %}info{% elseif progress > 30 %}warning{% else %}primary{% endif %}" 
+                                     style="width: {{ progress }}%" title="{{ progress }}% complete"></div>
+                            </div>
+                            <small class="text-muted">{{ progress }}%</small>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a href="/genz/public/workout-plans/view?id={{ plan.id }}" class="btn btn-sm btn-outline-primary" title="View Plan">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/genz/public/workout-plans/edit?id={{ plan.id }}" class="btn btn-sm btn-outline-warning" title="Edit Plan">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" title="Delete Plan" 
+                                        onclick="confirmDelete({{ plan.id }}, '{{ plan.plan_name }}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="bi bi-clipboard-x fs-1 d-block mb-2 opacity-50"></i>
+                            No workout plans found
+                            <br>
+                            <a href="/genz/public/workout-plans/create" class="btn btn-primary mt-2">
+                                <i class="bi bi-plus"></i> Create Your First Plan
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Actions -->
+{% if workoutPlans|length > 0 %}
+<div class="card mt-3" id="bulkActions" style="display: none;">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <span id="selectedCount">0 plans selected</span>
+            <div class="btn-group">
+                <button class="btn btn-success btn-sm" onclick="bulkActivate()">
+                    <i class="bi bi-check-circle"></i> Activate
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="bulkDeactivate()">
+                    <i class="bi bi-pause-circle"></i> Deactivate
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="bulkDelete()">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Pagination -->
+{% if totalPages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if currentPage <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ currentPage - 1 }}{% if searchTerm %}&search={{ searchTerm }}{% endif %}">Previous</a>
+        </li>
+        
+        {% for i in range(1, totalPages + 1) %}
+            {% if i == currentPage or (i <= 3 or i > totalPages - 3 or (i >= currentPage - 1 and i <= currentPage + 1)) %}
+                <li class="page-item {% if i == currentPage %}active{% endif %}">
+                    <a class="page-link" href="?page={{ i }}{% if searchTerm %}&search={{ searchTerm }}{% endif %}">{{ i }}</a>
+                </li>
+            {% elseif i == 4 and currentPage > 6 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% elseif i == totalPages - 3 and currentPage < totalPages - 5 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if currentPage >= totalPages %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ currentPage + 1 }}{% if searchTerm %}&search={{ searchTerm }}{% endif %}">Next</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Select all functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.plan-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+    updateBulkActions();
+});
+
+// Individual checkbox functionality
+document.querySelectorAll('.plan-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        updateBulkActions();
+        updateSelectAllState();
+    });
+});
+
+function updateSelectAllState() {
+    const checkboxes = document.querySelectorAll('.plan-checkbox');
+    const checkedBoxes = document.querySelectorAll('.plan-checkbox:checked');
+    const selectAllCheckbox = document.getElementById('selectAll');
+    
+    if (checkedBoxes.length === checkboxes.length) {
+        selectAllCheckbox.checked = true;
+        selectAllCheckbox.indeterminate = false;
+    } else if (checkedBoxes.length > 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = true;
+    } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+    }
+}
+
+function updateBulkActions() {
+    const checkedBoxes = document.querySelectorAll('.plan-checkbox:checked');
+    const bulkActions = document.getElementById('bulkActions');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (checkedBoxes.length > 0) {
+        bulkActions.style.display = 'block';
+        selectedCount.textContent = `${checkedBoxes.length} plan${checkedBoxes.length > 1 ? 's' : ''} selected`;
+    } else {
+        bulkActions.style.display = 'none';
+    }
+}
+
+function getSelectedPlanIds() {
+    const checkedBoxes = document.querySelectorAll('.plan-checkbox:checked');
+    return Array.from(checkedBoxes).map(checkbox => checkbox.value);
+}
+
+function bulkActivate() {
+    const selectedIds = getSelectedPlanIds();
+    if (selectedIds.length === 0) return;
+    
+    if (confirm(`Activate ${selectedIds.length} selected plan(s)?`)) {
+        // Add AJAX call here
+        alert('Bulk activation feature coming soon!');
+    }
+}
+
+function bulkDeactivate() {
+    const selectedIds = getSelectedPlanIds();
+    if (selectedIds.length === 0) return;
+    
+    if (confirm(`Deactivate ${selectedIds.length} selected plan(s)?`)) {
+        // Add AJAX call here
+        alert('Bulk deactivation feature coming soon!');
+    }
+}
+
+function bulkDelete() {
+    const selectedIds = getSelectedPlanIds();
+    if (selectedIds.length === 0) return;
+    
+    if (confirm(`Delete ${selectedIds.length} selected plan(s)? This action cannot be undone.`)) {
+        // Add AJAX call here
+        alert('Bulk delete feature coming soon!');
+    }
+}
+
+function confirmDelete(planId, planName) {
+    if (confirm(`Are you sure you want to delete the workout plan "${planName}"? This action cannot be undone.`)) {
+        fetch('/genz/public/workout-plans/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + planId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting workout plan');
+        });
+    }
+}
+
+// Table sorting
+function sortTable(column) {
+    // Add table sorting functionality here
+    alert('Table sorting feature coming soon!');
+}
+
+// Auto-refresh for real-time updates
+let autoRefresh = false;
+let refreshInterval;
+
+function toggleAutoRefresh() {
+    autoRefresh = !autoRefresh;
+    if (autoRefresh) {
+        refreshInterval = setInterval(() => {
+            // Refresh the page without losing filters
+            window.location.reload();
+        }, 30000); // 30 seconds
+    } else {
+        clearInterval(refreshInterval);
+    }
+}
+</script>
+{% endblock %}
+

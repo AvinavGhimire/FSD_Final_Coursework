@@ -1,0 +1,211 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Add New Trainer - Fitness Club Management{% endblock %}
+{% block page_title %}Add New Trainer{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-person-plus-fill"></i> Trainer Information</h5>
+                <a href="/genz/public/trainers" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Trainers
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/genz/public/trainers/store" id="trainerForm">
+                    <div class="row">
+                        <!-- Personal Information -->
+                        <div class="col-md-6">
+                            <h6 class="text-success mb-3"><i class="bi bi-person"></i> Personal Details</h6>
+                            
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="form-text">Professional email address</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="hire_date" class="form-label">Hire Date *</label>
+                                <input type="date" class="form-control" id="hire_date" name="hire_date" value="{{ "now"|date("Y-m-d") }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="Active" selected>Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Professional Information -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3"><i class="bi bi-award"></i> Professional Details</h6>
+                            
+                            <div class="mb-3">
+                                <label for="specialization" class="form-label">Specialization</label>
+                                <textarea class="form-control" id="specialization" name="specialization" rows="3" 
+                                          placeholder="e.g., Strength Training, Yoga, Cardio, Weight Loss"></textarea>
+                                <div class="form-text">Separate multiple specializations with commas</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="experience_years" class="form-label">Years of Experience</label>
+                                <input type="number" class="form-control" id="experience_years" name="experience_years" 
+                                       min="0" max="50" placeholder="0">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="certification" class="form-label">Certifications</label>
+                                <textarea class="form-control" id="certification" name="certification" rows="3" 
+                                          placeholder="e.g., NASM CPT, ACE, ACSM"></textarea>
+                                <div class="form-text">List all relevant certifications</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Create Trainer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Panel -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Common Specializations</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary me-1 mb-1">Strength Training</span>
+                    <span class="badge bg-success me-1 mb-1">Cardio</span>
+                    <span class="badge bg-info me-1 mb-1">Weight Loss</span>
+                    <span class="badge bg-warning me-1 mb-1">Yoga</span>
+                    <span class="badge bg-danger me-1 mb-1">HIIT</span>
+                    <span class="badge bg-dark me-1 mb-1">CrossFit</span>
+                    <span class="badge bg-secondary me-1 mb-1">Pilates</span>
+                    <span class="badge bg-primary me-1 mb-1">Bodybuilding</span>
+                    <span class="badge bg-success me-1 mb-1">Functional Training</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-award"></i> Popular Certifications</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-1"><small>• NASM - National Academy of Sports Medicine</small></li>
+                    <li class="mb-1"><small>• ACE - American Council on Exercise</small></li>
+                    <li class="mb-1"><small>• ACSM - American College of Sports Medicine</small></li>
+                    <li class="mb-1"><small>• NSCA - National Strength and Conditioning Association</small></li>
+                    <li class="mb-1"><small>• CrossFit Level 1/2 Trainer</small></li>
+                    <li class="mb-1"><small>• RYT 200/500 - Registered Yoga Teacher</small></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Use professional email addresses</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Include all relevant certifications</small>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Specializations help in client matching</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    document.getElementById('trainerForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+
+    // Auto-suggest specializations
+    const specializationInput = document.getElementById('specialization');
+    const commonSpecs = [
+        'Strength Training', 'Cardio', 'Weight Loss', 'Yoga', 'HIIT', 
+        'CrossFit', 'Pilates', 'Bodybuilding', 'Functional Training',
+        'Sports Performance', 'Rehabilitation', 'Senior Fitness'
+    ];
+
+    // Add click handlers to specialization badges for quick selection
+    document.querySelectorAll('.badge').forEach(badge => {
+        badge.style.cursor = 'pointer';
+        badge.addEventListener('click', function() {
+            const spec = this.textContent.trim();
+            const currentValue = specializationInput.value;
+            
+            if (currentValue) {
+                if (!currentValue.includes(spec)) {
+                    specializationInput.value = currentValue + ', ' + spec;
+                }
+            } else {
+                specializationInput.value = spec;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+

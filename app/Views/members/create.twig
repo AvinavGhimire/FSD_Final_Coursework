@@ -1,0 +1,230 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Add New Member - Fitness Club Management{% endblock %}
+{% block page_title %}Add New Member{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-person-plus"></i> Member Information</h5>
+                <a href="/genz/public/members" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Members
+                </a>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/genz/public/members/store" id="memberForm">
+                    <div class="row">
+                        <!-- Personal Information -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3"><i class="bi bi-person"></i> Personal Details</h6>
+                            
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="form-text">Must be unique for each member</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" placeholder="Optional address"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Membership Information -->
+                        <div class="col-md-6">
+                            <h6 class="text-success mb-3"><i class="bi bi-card-checklist"></i> Membership Details</h6>
+                            
+                            <div class="mb-3">
+                                <label for="membership_type" class="form-label">Membership Type *</label>
+                                <select class="form-select" id="membership_type" name="membership_type" required>
+                                    <option value="">Choose membership type...</option>
+                                    {% for type in membershipTypes %}
+                                    <option value="{{ type }}">{{ type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="membership_start_date" class="form-label">Start Date *</label>
+                                <input type="date" class="form-control" id="membership_start_date" name="membership_start_date" value="{{ "now"|date("Y-m-d") }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="membership_expiry_date" class="form-label">Expiry Date *</label>
+                                <input type="date" class="form-control" id="membership_expiry_date" name="membership_expiry_date" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    {% for status in membershipStatuses %}
+                                    <option value="{{ status }}" {{ status == 'Active' ? 'selected' : '' }}>{{ status }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <hr>
+
+                            <h6 class="text-warning mb-3"><i class="bi bi-exclamation-triangle"></i> Emergency Contact</h6>
+                            
+                            <div class="mb-3">
+                                <label for="emergency_contact_name" class="form-label">Emergency Contact Name</label>
+                                <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" placeholder="Full name">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emergency_contact_phone" class="form-label">Emergency Contact Phone</label>
+                                <input type="tel" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone" placeholder="Phone number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Create Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Membership Information Panel -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Membership Types</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary">Basic</span>
+                    <p class="small mt-1">Access to gym equipment during regular hours</p>
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-success">Standard</span>
+                    <p class="small mt-1">Gym access + group classes</p>
+                </div>
+                <div class="mb-3">
+                    <span class="badge bg-warning">Premium</span>
+                    <p class="small mt-1">Full access + personal training sessions</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Quick Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Email addresses must be unique</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Start date is typically today</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Emergency contact is recommended</small>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Default status is Active</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-calculate expiry date based on membership type and start date
+document.addEventListener('DOMContentLoaded', function() {
+    const membershipType = document.getElementById('membership_type');
+    const startDate = document.getElementById('membership_start_date');
+    const expiryDate = document.getElementById('membership_expiry_date');
+
+    function calculateExpiryDate() {
+        if (startDate.value && membershipType.value) {
+            const start = new Date(startDate.value);
+            let months = 12; // Default to 1 year
+
+            // Customize duration based on membership type if needed
+            switch(membershipType.value) {
+                case 'Basic':
+                    months = 6;
+                    break;
+                case 'Standard':
+                    months = 12;
+                    break;
+                case 'Premium':
+                    months = 12;
+                    break;
+            }
+
+            start.setMonth(start.getMonth() + months);
+            expiryDate.value = start.toISOString().split('T')[0];
+        }
+    }
+
+    membershipType.addEventListener('change', calculateExpiryDate);
+    startDate.addEventListener('change', calculateExpiryDate);
+
+    // Initial calculation
+    calculateExpiryDate();
+
+    // Form validation
+    document.getElementById('memberForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+});
+</script>
+{% endblock %}
+
+

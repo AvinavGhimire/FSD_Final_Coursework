@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GenzFitness - Professional Gym Management{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/genz/public/assets/css/app.css" rel="stylesheet">
+    {% block styles %}{% endblock %}
+    
+    <script>
+        window.APP_BASE_PATH = '/genz/public';
+    </script>
+</head>
+<body class="pop-theme">
+    {% block body_override %}
+    <div class="main-wrapper">
+        <!-- Top Map Bar Navigation -->
+        <div class="map-bar pop-border">
+            <div class="map-item brand" style="background: var(--pop-blue); color: white; cursor: default;">
+                <i class="fas fa-dumbbell me-2"></i> genz<span>FITNESS</span>
+            </div>
+            <a href="/genz/public/dashboard" class="map-item {% if current_page == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-line me-1"></i> Dashboard
+            </a>
+            <a href="/genz/public/members" class="map-item {% if current_page == 'members' %}active{% endif %}">
+                <i class="fas fa-users me-1"></i> Members
+            </a>
+            <a href="/genz/public/trainers" class="map-item {% if current_page == 'trainers' %}active{% endif %}">
+                <i class="fas fa-user-tie me-1"></i> Trainers
+            </a>
+            <a href="/genz/public/workout-plans" class="map-item {% if current_page == 'workout_plans' %}active{% endif %}">
+                <i class="fas fa-clipboard-list me-1"></i> Programs
+            </a>
+            <a href="/genz/public/memberships" class="map-item {% if current_page == 'memberships' %}active{% endif %}">
+                <i class="fas fa-id-card me-1"></i> Memberships
+            </a>
+            
+            <div style="margin-left: auto; display: flex; gap: 10px; align-items: center; padding: 0 15px;">
+                {% if auth.check %}
+                    <span class="badge bg-warning" style="border: 2px solid black;">{{ auth.user.name }}</span>
+                {% endif %}
+                <a href="/genz/public/logout" class="map-item" style="background: var(--pop-pink); color: white;">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="container-fluid">
+                <!-- Page Title Area -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h1>
+                    <div class="text-muted fw-bold">
+                        <i class="fas fa-calendar-day me-2"></i> {{ "now"|date("M d, Y") }}
+                    </div>
+                </div>
+
+                <!-- Flash Messages -->
+                {% if app.session.success is defined %}
+                <div class="alert alert-success pop-border pop-shadow mb-4" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>{{ app.session.success }}
+                </div>
+                {% endif %}
+
+                {% if app.session.error is defined %}
+                <div class="alert alert-danger pop-border pop-shadow mb-4" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>{{ app.session.error }}
+                </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/genz/public/assets/js/app.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Confirm delete functions
+            window.confirmDelete = function(message, callback) {
+                if (confirm(message || 'Are you sure you want to delete this item?')) {
+                    callback();
+                }
+            };
+
+            // Auto-hide alerts after 5 seconds
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                });
+            }, 5000);
+
+            // Add loading states to buttons
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    const btn = this.querySelector('button[type="submit"]');
+                    if (btn) {
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>...';
+                        btn.style.opacity = '0.8';
+                        btn.style.pointerEvents = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

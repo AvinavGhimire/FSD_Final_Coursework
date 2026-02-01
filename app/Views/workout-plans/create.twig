@@ -1,0 +1,597 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Create Workout Plan - Fitness Club Management{% endblock %}
+{% block page_title %}Create Workout Plan{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/genz/public/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/genz/public/workout-plans">Workout Plans</a></li>
+            <li class="breadcrumb-item active">Create Plan</li>
+        </ol>
+    </nav>
+</div>
+
+{% if error %}
+<div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle"></i> {{ error }}
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Create Form -->
+    <div class="col-lg-8">
+        <div class="card form-custom">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-plus"></i> Create New Workout Plan</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/genz/public/workout-plans/create" id="createPlanForm">
+                    <!-- Basic Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted border-bottom pb-2">Basic Information</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plan_name" class="form-label required">Plan Name</label>
+                            <input type="text" class="form-control" name="plan_name" id="plan_name" required
+                                   placeholder="e.g., Weight Loss Program, Strength Building...">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plan_type" class="form-label required">Plan Type</label>
+                            <select class="form-select" name="plan_type" id="plan_type" required>
+                                <option value="">Select Plan Type</option>
+                                <option value="Weight Loss">Weight Loss</option>
+                                <option value="Muscle Gain">Muscle Gain</option>
+                                <option value="Strength Training">Strength Training</option>
+                                <option value="Cardio">Cardio</option>
+                                <option value="Flexibility">Flexibility</option>
+                                <option value="Sports Specific">Sports Specific</option>
+                                <option value="Rehabilitation">Rehabilitation</option>
+                                <option value="General Fitness">General Fitness</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <label for="plan_description" class="form-label required">Plan Description</label>
+                            <textarea class="form-control" name="plan_description" id="plan_description" rows="3" required
+                                      placeholder="Describe the workout plan objectives, target areas, and expected outcomes..."></textarea>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+
+                    <!-- Member and Trainer Assignment -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted border-bottom pb-2">Assignment</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="member_id" class="form-label required">Member</label>
+                            <select class="form-select" name="member_id" id="member_id" required>
+                                <option value="">Select Member</option>
+                                {% for member in members %}
+                                <option value="{{ member.id }}" 
+                                        data-membership="{{ member.membership_type }}"
+                                        data-email="{{ member.email }}"
+                                        {% if selectedMember == member.id %}selected{% endif %}>
+                                    {{ member.first_name }} {{ member.last_name }} ({{ member.membership_type }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Member's current membership will be validated</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="trainer_id" class="form-label required">Assigned Trainer</label>
+                            <select class="form-select" name="trainer_id" id="trainer_id" required>
+                                <option value="">Select Trainer</option>
+                                {% for trainer in trainers %}
+                                <option value="{{ trainer.id }}"
+                                        data-specialization="{{ trainer.specialization }}"
+                                        data-rate="{{ trainer.hourly_rate }}"
+                                        {% if selectedTrainer == trainer.id %}selected{% endif %}>
+                                    {{ trainer.first_name }} {{ trainer.last_name }} - {{ trainer.specialization }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback"></div>
+                            <small class="form-text text-muted">Trainer specialization should match plan type</small>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted border-bottom pb-2">Schedule</h6>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="start_date" class="form-label required">Start Date</label>
+                            <input type="date" class="form-control" name="start_date" id="start_date" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="end_date" class="form-label required">End Date</label>
+                            <input type="date" class="form-control" name="end_date" id="end_date" required>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="duration_weeks" class="form-label">Duration</label>
+                            <input type="text" class="form-control" id="duration_weeks" readonly 
+                                   placeholder="Auto-calculated">
+                            <small class="form-text text-muted">Calculated from start and end dates</small>
+                        </div>
+                    </div>
+
+                    <!-- Plan Details -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted border-bottom pb-2">Plan Details</h6>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sessions_per_week" class="form-label required">Sessions per Week</label>
+                            <select class="form-select" name="sessions_per_week" id="sessions_per_week" required>
+                                <option value="">Select Frequency</option>
+                                <option value="1">1 session/week</option>
+                                <option value="2">2 sessions/week</option>
+                                <option value="3">3 sessions/week</option>
+                                <option value="4">4 sessions/week</option>
+                                <option value="5">5 sessions/week</option>
+                                <option value="6">6 sessions/week</option>
+                                <option value="7">7 sessions/week</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="session_duration" class="form-label required">Session Duration (minutes)</label>
+                            <input type="number" class="form-control" name="session_duration" id="session_duration" 
+                                   min="15" max="180" step="15" required placeholder="60">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="difficulty_level" class="form-label required">Difficulty Level</label>
+                            <select class="form-select" name="difficulty_level" id="difficulty_level" required>
+                                <option value="">Select Level</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+
+                    <!-- Workout Exercises -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted border-bottom pb-2">
+                                Workout Exercises
+                                <button type="button" class="btn btn-sm btn-outline-primary float-end" onclick="addExercise()">
+                                    <i class="bi bi-plus"></i> Add Exercise
+                                </button>
+                            </h6>
+                        </div>
+                        <div class="col-12">
+                            <div id="exercises-container">
+                                <!-- Exercises will be added dynamically -->
+                                <div class="exercise-row border rounded p-3 mb-3">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Exercise Name</label>
+                                            <input type="text" class="form-control" name="exercises[0][name]" 
+                                                   placeholder="e.g., Push-ups, Squats..." required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Sets</label>
+                                            <input type="number" class="form-control" name="exercises[0][sets]" 
+                                                   min="1" max="10" value="3" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Reps</label>
+                                            <input type="text" class="form-control" name="exercises[0][reps]" 
+                                                   placeholder="12 or 10-15" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Rest (sec)</label>
+                                            <input type="number" class="form-control" name="exercises[0][rest]" 
+                                                   min="30" max="300" step="15" value="60" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Weight (lbs)</label>
+                                            <input type="text" class="form-control" name="exercises[0][weight]" 
+                                                   placeholder="Optional">
+                                        </div>
+                                        <div class="col-md-1 d-flex align-items-end">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeExercise(this)" disabled>
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted border-bottom pb-2">Additional Information</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="goals" class="form-label">Primary Goals</label>
+                            <textarea class="form-control" name="goals" id="goals" rows="3"
+                                      placeholder="List specific goals this plan aims to achieve..."></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="notes" class="form-label">Special Notes/Instructions</label>
+                            <textarea class="form-control" name="notes" id="notes" rows="3"
+                                      placeholder="Any special considerations, modifications, or instructions..."></textarea>
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="is_active" checked>
+                                <label class="form-check-label" for="is_active">
+                                    Activate plan immediately
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="send_notification" id="send_notification" checked>
+                                <label class="form-check-label" for="send_notification">
+                                    Send notification to member
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="row">
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <a href="/genz/public/workout-plans" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left"></i> Cancel
+                                </a>
+                                <div>
+                                    <button type="button" class="btn btn-outline-primary me-2" onclick="saveDraft()">
+                                        <i class="bi bi-save"></i> Save as Draft
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check"></i> Create Plan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan Summary and Tips -->
+    <div class="col-lg-4">
+        <!-- Member Information -->
+        <div class="card" id="memberInfo" style="display: none;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person-circle"></i> Selected Member</h6>
+            </div>
+            <div class="card-body">
+                <div id="memberDetails"></div>
+            </div>
+        </div>
+
+        <!-- Trainer Information -->
+        <div class="card mt-3" id="trainerInfo" style="display: none;">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person-badge"></i> Selected Trainer</h6>
+            </div>
+            <div class="card-body">
+                <div id="trainerDetails"></div>
+            </div>
+        </div>
+
+        <!-- Plan Tips -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Plan Creation Tips</h6>
+            </div>
+            <div class="card-body">
+                <div class="tips">
+                    <div class="tip-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Match trainer specialization with plan type for best results</span>
+                    </div>
+                    <div class="tip-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Start with 2-3 sessions per week for beginners</span>
+                    </div>
+                    <div class="tip-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Include 3-6 exercises per session</span>
+                    </div>
+                    <div class="tip-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Set realistic goals based on member's fitness level</span>
+                    </div>
+                    <div class="tip-item">
+                        <i class="bi bi-check-circle text-success"></i>
+                        <span>Allow adequate rest between sets (60-90 seconds)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.tips .tip-item {
+    display: flex;
+    align-items-start;
+    margin-bottom: 10px;
+}
+
+.tips .tip-item i {
+    margin-right: 8px;
+    margin-top: 2px;
+}
+
+.exercise-row {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let exerciseIndex = 1;
+
+// Member selection handler
+document.getElementById('member_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    if (selectedOption.value) {
+        const memberInfo = {
+            name: selectedOption.text.split(' (')[0],
+            membership: selectedOption.dataset.membership,
+            email: selectedOption.dataset.email
+        };
+        showMemberInfo(memberInfo);
+    } else {
+        document.getElementById('memberInfo').style.display = 'none';
+    }
+});
+
+// Trainer selection handler
+document.getElementById('trainer_id').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    if (selectedOption.value) {
+        const trainerInfo = {
+            name: selectedOption.text.split(' - ')[0],
+            specialization: selectedOption.dataset.specialization,
+            rate: selectedOption.dataset.rate
+        };
+        showTrainerInfo(trainerInfo);
+    } else {
+        document.getElementById('trainerInfo').style.display = 'none';
+    }
+});
+
+function showMemberInfo(info) {
+    document.getElementById('memberDetails').innerHTML = `
+        <div class="text-center mb-2">
+            <i class="bi bi-person-circle" style="font-size: 3rem; color: var(--primary-color);"></i>
+            <h6 class="mt-2">${info.name}</h6>
+        </div>
+        <div class="member-details">
+            <div><strong>Email:</strong> ${info.email}</div>
+            <div><strong>Membership:</strong> <span class="badge bg-info">${info.membership}</span></div>
+        </div>
+    `;
+    document.getElementById('memberInfo').style.display = 'block';
+}
+
+function showTrainerInfo(info) {
+    document.getElementById('trainerDetails').innerHTML = `
+        <div class="text-center mb-2">
+            <i class="bi bi-person-badge" style="font-size: 3rem; color: var(--success-color);"></i>
+            <h6 class="mt-2">${info.name}</h6>
+        </div>
+        <div class="trainer-details">
+            <div><strong>Specialization:</strong> ${info.specialization}</div>
+            <div><strong>Rate:</strong> $${info.rate}/hour</div>
+        </div>
+    `;
+    document.getElementById('trainerInfo').style.display = 'block';
+}
+
+// Date calculation
+document.getElementById('start_date').addEventListener('change', calculateDuration);
+document.getElementById('end_date').addEventListener('change', calculateDuration);
+
+function calculateDuration() {
+    const startDate = new Date(document.getElementById('start_date').value);
+    const endDate = new Date(document.getElementById('end_date').value);
+    
+    if (startDate && endDate && endDate > startDate) {
+        const diffTime = Math.abs(endDate - startDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const weeks = Math.round(diffDays / 7);
+        document.getElementById('duration_weeks').value = `${weeks} week${weeks > 1 ? 's' : ''} (${diffDays} days)`;
+    } else {
+        document.getElementById('duration_weeks').value = '';
+    }
+}
+
+// Set minimum date to today
+document.getElementById('start_date').min = new Date().toISOString().split('T')[0];
+
+// Update end date minimum when start date changes
+document.getElementById('start_date').addEventListener('change', function() {
+    document.getElementById('end_date').min = this.value;
+});
+
+function addExercise() {
+    const container = document.getElementById('exercises-container');
+    const exerciseRow = document.createElement('div');
+    exerciseRow.className = 'exercise-row border rounded p-3 mb-3';
+    exerciseRow.innerHTML = `
+        <div class="row">
+            <div class="col-md-3">
+                <label class="form-label">Exercise Name</label>
+                <input type="text" class="form-control" name="exercises[${exerciseIndex}][name]" 
+                       placeholder="e.g., Push-ups, Squats..." required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Sets</label>
+                <input type="number" class="form-control" name="exercises[${exerciseIndex}][sets]" 
+                       min="1" max="10" value="3" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Reps</label>
+                <input type="text" class="form-control" name="exercises[${exerciseIndex}][reps]" 
+                       placeholder="12 or 10-15" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Rest (sec)</label>
+                <input type="number" class="form-control" name="exercises[${exerciseIndex}][rest]" 
+                       min="30" max="300" step="15" value="60" required>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Weight (lbs)</label>
+                <input type="text" class="form-control" name="exercises[${exerciseIndex}][weight]" 
+                       placeholder="Optional">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeExercise(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    container.appendChild(exerciseRow);
+    exerciseIndex++;
+    updateRemoveButtons();
+}
+
+function removeExercise(button) {
+    button.closest('.exercise-row').remove();
+    updateRemoveButtons();
+}
+
+function updateRemoveButtons() {
+    const exerciseRows = document.querySelectorAll('.exercise-row');
+    exerciseRows.forEach((row, index) => {
+        const removeButton = row.querySelector('button[onclick*="removeExercise"]');
+        removeButton.disabled = exerciseRows.length === 1;
+    });
+}
+
+function saveDraft() {
+    alert('Save as draft feature coming soon!');
+}
+
+// Form validation
+document.getElementById('createPlanForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Clear previous validation
+    clearValidation();
+    
+    // Validate exercises
+    const exerciseRows = document.querySelectorAll('.exercise-row');
+    if (exerciseRows.length === 0) {
+        showAlert('warning', 'Please add at least one exercise to the workout plan.');
+        return;
+    }
+    
+    // Validate dates
+    const startDate = new Date(document.getElementById('start_date').value);
+    const endDate = new Date(document.getElementById('end_date').value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (startDate < today) {
+        showAlert('warning', 'Start date cannot be in the past.');
+        return;
+    }
+    
+    if (endDate <= startDate) {
+        showAlert('warning', 'End date must be after start date.');
+        return;
+    }
+    
+    const formData = new FormData(this);
+    
+    fetch('/genz/public/workout-plans/create', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Workout plan created successfully!');
+            setTimeout(() => {
+                window.location.href = `/workout-plans/view?id=${data.plan_id}`;
+            }, 1500);
+        } else {
+            if (data.errors) {
+                displayValidationErrors(data.errors);
+            } else {
+                showAlert('danger', data.message || 'An error occurred while creating the workout plan.');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('danger', 'An unexpected error occurred. Please try again.');
+    });
+});
+
+function clearValidation() {
+    document.querySelectorAll('.is-invalid').forEach(el => {
+        el.classList.remove('is-invalid');
+    });
+    document.querySelectorAll('.invalid-feedback').forEach(el => {
+        el.textContent = '';
+    });
+}
+
+function displayValidationErrors(errors) {
+    for (const field in errors) {
+        const input = document.getElementById(field);
+        if (input) {
+            input.classList.add('is-invalid');
+            const feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = errors[field];
+            }
+        }
+    }
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-triangle'}"></i> 
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert at the top of the page
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+// Initialize
+updateRemoveButtons();
+</script>
+{% endblock %}
+

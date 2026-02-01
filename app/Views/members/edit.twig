@@ -1,0 +1,181 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Edit Member - {{ member.first_name }} {{ member.last_name }}{% endblock %}
+{% block page_title %}Edit Member{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0">Edit Member</h4>
+        <p class="text-muted">{{ member.first_name }} {{ member.last_name }} (ID: #{{ member.id }})</p>
+    </div>
+    <div>
+        <a href="/genz/public/members/view?id={{ member.id }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Profile
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pencil"></i> Update Member Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/genz/public/members/update" id="editMemberForm">
+                    <input type="hidden" name="id" value="{{ member.id }}">
+                    
+                    <div class="row">
+                        <!-- Personal Information -->
+                        <div class="col-md-6">
+                            <h6 class="text-primary mb-3"><i class="bi bi-person"></i> Personal Details</h6>
+                            
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ member.first_name }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ member.last_name }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ member.email }}" required>
+                                <div class="form-text">Must be unique for each member</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ member.phone }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ member.date_of_birth }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="3">{{ member.address }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Membership Information -->
+                        <div class="col-md-6">
+                            <h6 class="text-success mb-3"><i class="bi bi-card-checklist"></i> Membership Details</h6>
+                            
+                            <div class="mb-3">
+                                <label for="membership_type" class="form-label">Membership Type *</label>
+                                <select class="form-select" id="membership_type" name="membership_type" required>
+                                    {% for type in membershipTypes %}
+                                    <option value="{{ type }}" {{ member.membership_type == type ? 'selected' : '' }}>{{ type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="membership_start_date" class="form-label">Start Date *</label>
+                                <input type="date" class="form-control" id="membership_start_date" name="membership_start_date" value="{{ member.membership_start_date }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="membership_expiry_date" class="form-label">Expiry Date *</label>
+                                <input type="date" class="form-control" id="membership_expiry_date" name="membership_expiry_date" value="{{ member.membership_expiry_date }}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    {% for status in membershipStatuses %}
+                                    <option value="{{ status }}" {{ member.status == status ? 'selected' : '' }}>{{ status }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <hr>
+
+                            <h6 class="text-warning mb-3"><i class="bi bi-exclamation-triangle"></i> Emergency Contact</h6>
+                            
+                            <div class="mb-3">
+                                <label for="emergency_contact_name" class="form-label">Emergency Contact Name</label>
+                                <input type="text" class="form-control" id="emergency_contact_name" name="emergency_contact_name" value="{{ member.emergency_contact_name }}" placeholder="Full name">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emergency_contact_phone" class="form-label">Emergency Contact Phone</label>
+                                <input type="tel" class="form-control" id="emergency_contact_phone" name="emergency_contact_phone" value="{{ member.emergency_contact_phone }}" placeholder="Phone number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Update Member
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Panel -->
+    <div class="col-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>All changes are logged</small>
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Email must be unique</small>
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <small>Status change affects access</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    document.getElementById('editMemberForm').addEventListener('submit', function(e) {
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+        }
+    });
+});
+</script>
+{% endblock %}
+

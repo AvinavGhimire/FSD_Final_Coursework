@@ -1,0 +1,177 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Members - Fitness Club Management{% endblock %}
+{% block page_title %}Members Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0">All Members</h4>
+        <p class="text-muted">Manage gym members and their memberships</p>
+    </div>
+    <div>
+        <a href="/genz/public/members/create" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Add New Member
+        </a>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-search"></i> Search & Filter</h6>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="/genz/public/members/search" class="row g-3">
+            <div class="col-md-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Search by name" value="{{ params.name }}">
+            </div>
+            <div class="col-md-3">
+                <label for="membership_type" class="form-label">Membership Type</label>
+                <select class="form-select" id="membership_type" name="membership_type">
+                    <option value="">All Types</option>
+                    {% for type in membershipTypes %}
+                    <option value="{{ type }}" {{ params.membership_type == type ? 'selected' : '' }}>{{ type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All Statuses</option>
+                    {% for status in membershipStatuses %}
+                    <option value="{{ status }}" {{ params.status == status ? 'selected' : '' }}>{{ status }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="expiry_date" class="form-label">Expiring Before</label>
+                <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ params.expiry_date }}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                <a href="/genz/public/members" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Members Table -->
+<div class="card table-custom">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Membership Type</th>
+                        <th>Status</th>
+                        <th>Expiry Date</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in members %}
+                    <tr>
+                        <td><strong>#{{ member.id }}</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-person-circle fs-4 text-primary me-2"></i>
+                                <div>
+                                    <strong>{{ member.first_name }} {{ member.last_name }}</strong><br>
+                                    {% if member.date_of_birth %}
+                                    <small class="text-muted">Born: {{ member.date_of_birth|date("M d, Y") }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.phone }}</td>
+                        <td>
+                            <span class="badge bg-info">{{ member.membership_type }}</span>
+                        </td>
+                        <td>
+                            {% if member.status == 'Active' %}
+                                <span class="badge bg-success">{{ member.status }}</span>
+                            {% elseif member.status == 'Expired' %}
+                                <span class="badge bg-danger">{{ member.status }}</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">{{ member.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ member.membership_expiry_date|date("M d, Y") }}
+                            {% set today = date() %}
+                            {% set expiry = date(member.membership_expiry_date) %}
+                            {% if expiry < today %}
+                                <br><small class="text-danger">Expired</small>
+                            {% elseif expiry < date('+7 days') %}
+                                <br><small class="text-warning">Expires Soon</small>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a href="/genz/public/members/view?id={{ member.id }}" class="btn btn-sm btn-outline-primary" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="/genz/public/members/edit?id={{ member.id }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger" title="Delete" 
+                                        onclick="deleteMember({{ member.id }}, '{{ member.first_name }} {{ member.last_name }}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="bi bi-people fs-1 d-block mb-2 opacity-50"></i>
+                            No members found
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function deleteMember(id, name) {
+    if (confirm(`Are you sure you want to delete member "${name}"? This action cannot be undone.`)) {
+        fetch('/genz/public/members/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + id
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error deleting member');
+        });
+    }
+}
+</script>
+{% endblock %}
+
+

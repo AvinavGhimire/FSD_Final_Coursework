@@ -1,0 +1,225 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}{{ member.first_name }} {{ member.last_name }} - Member Details{% endblock %}
+{% block page_title %}Member Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0">{{ member.first_name }} {{ member.last_name }}</h4>
+        <p class="text-muted mb-0">Member ID: #{{ member.id }}</p>
+    </div>
+    <div>
+        <a href="/genz/public/members" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left"></i> Back to Members
+        </a>
+        <a href="/genz/public/members/edit?id={{ member.id }}" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Member Information -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-person-circle display-1 text-primary mb-3"></i>
+                <h5>{{ member.first_name }} {{ member.last_name }}</h5>
+                <p class="text-muted">{{ member.email }}</p>
+                
+                <!-- Membership Status -->
+                {% if member.status == 'Active' %}
+                    <span class="badge bg-success fs-6 mb-2">{{ member.status }}</span>
+                {% elseif member.status == 'Expired' %}
+                    <span class="badge bg-danger fs-6 mb-2">{{ member.status }}</span>
+                {% else %}
+                    <span class="badge bg-warning fs-6 mb-2">{{ member.status }}</span>
+                {% endif %}
+                
+                <br>
+                <span class="badge bg-info fs-6">{{ member.membership_type }}</span>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#renewalModal">
+                        <i class="bi bi-arrow-clockwise"></i> Renew Membership
+                    </button>
+
+                    <a href="/genz/public/workout-plans/create?member_id={{ member.id }}" class="btn btn-info">
+                        <i class="bi bi-clipboard-plus"></i> New Workout Plan
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Details and History -->
+    <div class="col-md-8">
+        <!-- Member Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Member Details</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Full Name:</strong></td>
+                                <td>{{ member.first_name }} {{ member.last_name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Email:</strong></td>
+                                <td>{{ member.email }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Phone:</strong></td>
+                                <td>{{ member.phone }}</td>
+                            </tr>
+                            {% if member.date_of_birth %}
+                            <tr>
+                                <td><strong>Date of Birth:</strong></td>
+                                <td>{{ member.date_of_birth|date("M d, Y") }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if member.address %}
+                            <tr>
+                                <td><strong>Address:</strong></td>
+                                <td>{{ member.address }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Membership Type:</strong></td>
+                                <td><span class="badge bg-info">{{ member.membership_type }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td>
+                                    {% if member.status == 'Active' %}
+                                        <span class="badge bg-success">{{ member.status }}</span>
+                                    {% elseif member.status == 'Expired' %}
+                                        <span class="badge bg-danger">{{ member.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ member.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Start Date:</strong></td>
+                                <td>{{ member.membership_start_date|date("M d, Y") }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Expiry Date:</strong></td>
+                                <td>{{ member.membership_expiry_date|date("M d, Y") }}</td>
+                            </tr>
+                            {% if member.emergency_contact_name %}
+                            <tr>
+                                <td><strong>Emergency Contact:</strong></td>
+                                <td>{{ member.emergency_contact_name }}<br>
+                                    <small>{{ member.emergency_contact_phone }}</small>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Plans -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-clipboard-data"></i> Workout Plans</h6>
+                <a href="/genz/public/workout-plans/create?member_id={{ member.id }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus"></i> Add Plan
+                </a>
+            </div>
+            <div class="card-body">
+                {% if workoutPlans|length > 0 %}
+                    {% for plan in workoutPlans %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">{{ plan.plan_name }}</h6>
+                                {% if plan.trainer_name %}
+                                    <p class="text-muted mb-1">Trainer: {{ plan.trainer_name }}</p>
+                                {% endif %}
+                                {% if plan.description %}
+                                    <p class="mb-1">{{ plan.description }}</p>
+                                {% endif %}
+                                <small class="text-muted">
+                                    {{ plan.start_date|date("M d, Y") }} 
+                                    {% if plan.end_date %} - {{ plan.end_date|date("M d, Y") }}{% endif %}
+                                    {% if plan.duration_weeks %} ({{ plan.duration_weeks }} weeks){% endif %}
+                                </small>
+                            </div>
+                            <span class="badge bg-{{ plan.status == 'Active' ? 'success' : (plan.status == 'Completed' ? 'primary' : 'secondary') }}">
+                                {{ plan.status }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center py-4">
+                        <i class="bi bi-clipboard-x fs-1 d-block mb-2 opacity-50"></i>
+                        No workout plans assigned yet
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Membership Renewal Modal -->
+<div class="modal fade" id="renewalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-arrow-clockwise"></i> Renew Membership</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/genz/public/memberships/renew">
+                <div class="modal-body">
+                    <input type="hidden" name="member_id" value="{{ member.id }}">
+                    
+                    <div class="mb-3">
+                        <label for="months" class="form-label">Renewal Period</label>
+                        <select class="form-select" name="months" id="months">
+                            <option value="1">1 Month</option>
+                            <option value="3">3 Months</option>
+                            <option value="6">6 Months</option>
+                            <option value="12" selected>12 Months</option>
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Current Expiry:</strong> {{ member.membership_expiry_date|date("M d, Y") }}<br>
+                        <strong>Current Status:</strong> {{ member.status }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Renew Membership</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

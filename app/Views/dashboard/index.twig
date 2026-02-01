@@ -1,0 +1,118 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Dashboard - Fitness Club Management{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <!-- Statistics Cards -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card stats-card primary">
+            <h5 class="mb-0">Total Members</h5>
+            <h2>{{ member_stats.total }}</h2>
+            <small>Active: {{ member_stats.active }}</small>
+            <a href="/genz/public/members" class="btn-sticker sticker-bottom-right">VIEW ALL</a>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card stats-card success">
+            <h5 class="mb-0">Trainers</h5>
+            <h2>{{ trainer_stats.total }}</h2>
+            <small>Active Coaches</small>
+            <a href="/genz/public/trainers" class="btn-sticker sticker-bottom-right">ROSTER</a>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card stats-card info">
+            <h5 class="mb-0">Workouts</h5>
+            <h2>{{ workout_plan_stats.total }}</h2>
+            <small>Active Programs</small>
+            <a href="/genz/public/workout-plans" class="btn-sticker sticker-bottom-right">PLANS</a>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card stats-card warning">
+            <h5 class="mb-0">Expiring</h5>
+            <h2>{{ member_stats.expiring_soon }}</h2>
+            <small>Next 30 Days</small>
+            <a href="/genz/public/members?filter=expiring" class="btn-sticker sticker-bottom-right">ALERTS</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Members -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Members</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive table-custom">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Member Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in recent_members %}
+                            <tr>
+                                <td>
+                                    <strong>{{ member.first_name }} {{ member.last_name }}</strong><br>
+                                    <small class="text-muted">{{ member.email }}</small>
+                                </td>
+                                <td><span class="badge bg-info">{{ member.membership_type }}</span></td>
+                                <td>
+                                    {% if member.status == 'Active' %}
+                                        <span class="badge bg-success">{{ member.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ member.status }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <a href="/genz/public/members/create" class="btn-sticker sticker-top-right" style="background: var(--pop-yellow);">+ NEW MEMBER</a>
+        </div>
+    </div>
+
+    <!-- Quick Actions Map / Sidebar -->
+    <div class="col-lg-4 mb-4">
+        <div class="card" style="background: var(--pop-yellow);">
+            <div class="card-header" style="background: var(--pop-black); color: white;">
+                <h5 class="mb-0">Quick Launch</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a href="/genz/public/trainers/create" class="btn w-100" style="background: white;">
+                        <i class="fas fa-plus-circle me-2"></i> Add Trainer
+                    </a>
+                    <a href="/genz/public/workout-plans/create" class="btn w-100" style="background: white;">
+                        <i class="fas fa-clipboard-list me-2"></i> New Workout Plan
+                    </a>
+                    <a href="/genz/public/memberships/create" class="btn w-100" style="background: white;">
+                        <i class="fas fa-id-card me-2"></i> New Membership
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Information -->
+        <div class="card pop-shadow mt-4">
+            <div class="card-body">
+                <h6 class="text-uppercase fw-bold mb-3">System Message</h6>
+                <p class="small mb-0">Welcome to the Neo-Pop dashboard! This interface is designed for high-speed management with maximum visibility.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

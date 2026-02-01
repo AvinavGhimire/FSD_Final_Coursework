@@ -1,0 +1,324 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Memberships - Fitness Club Management{% endblock %}
+{% block page_title %}Membership Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="mb-0">Membership Overview</h4>
+        <p class="text-muted">Monitor membership statuses and renewals</p>
+    </div>
+</div>
+
+<!-- Membership Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card info">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ membershipStats.by_type.Basic|default(0) }}</h3>
+                <p class="mb-0">Basic Members</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card success">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ membershipStats.by_type.Standard|default(0) }}</h3>
+                <p class="mb-0">Standard Members</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card warning">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ membershipStats.by_type.Premium|default(0) }}</h3>
+                <p class="mb-0">Premium Members</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <h3 class="text-white">{{ membershipStats.expiring_7_days }}</h3>
+                <p class="mb-0">Expiring This Week</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expiring Memberships Alert -->
+{% if membershipStats.expiring_7_days > 0 %}
+<div class="alert alert-warning">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle fs-4 me-3"></i>
+        <div>
+            <strong>Urgent:</strong> {{ membershipStats.expiring_7_days }} memberships expire within 7 days!
+            <a href="/genz/public/memberships/expiring?days=7" class="btn btn-sm btn-warning ms-2">View Details</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Navigation Tabs -->
+<ul class="nav nav-tabs" id="membershipTabs" role="tablist">
+</ul>
+
+<div class="tab-content" id="membershipTabsContent">
+    <!-- Expiring Memberships Tab -->
+    <div class="tab-pane fade show active" id="expiring" role="tabpanel">
+        <div class="card mt-3 table-custom">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">
+                    <i class="bi bi-calendar-x"></i> 
+                    Expiring Memberships (Next 30 days)
+                </h6>
+                <div>
+                    <select class="form-select form-select-sm" id="daysFilter">
+                        <option value="7" {% if days == 7 %}selected{% endif %}>Next 7 days</option>
+                        <option value="14" {% if days == 14 %}selected{% endif %}>Next 14 days</option>
+                        <option value="30" {% if days == 30 or days is not defined %}selected{% endif %}>Next 30 days</option>
+                        <option value="60" {% if days == 60 %}selected{% endif %}>Next 60 days</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>Member</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Expiry Date</th>
+                                <th>Days Left</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in expiringMemberships %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-circle fs-5 text-warning me-2"></i>
+                                        <div>
+                                            <strong>{{ member.first_name }} {{ member.last_name }}</strong><br>
+                                            <small class="text-muted">{{ member.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ member.membership_type }}</span>
+                                </td>
+                                <td>
+                                    {% if member.status == 'Active' %}
+                                        <span class="badge bg-success">{{ member.status }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ member.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ member.membership_expiry_date|date("M d, Y") }}
+                                </td>
+                                <td>
+                                    {% set daysLeft = date(member.membership_expiry_date).diff(date()).days %}
+                                    {% if daysLeft < 0 %}
+                                        <span class="badge bg-danger">Expired</span>
+                                    {% elseif daysLeft <= 3 %}
+                                        <span class="badge bg-danger">{{ daysLeft }} days</span>
+                                    {% elseif daysLeft <= 7 %}
+                                        <span class="badge bg-warning">{{ daysLeft }} days</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ daysLeft }} days</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="/genz/public/members/view?id={{ member.id }}" class="btn btn-sm btn-outline-primary" title="View Member">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-success" title="Renew Membership" 
+                                                onclick="showRenewalModal({{ member.id }}, '{{ member.first_name }} {{ member.last_name }}', '{{ member.membership_expiry_date }}')">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-check-circle fs-1 d-block mb-2 opacity-50"></i>
+                                    No expiring memberships found
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Tab -->
+    <div class="tab-pane fade" id="stats" role="tabpanel">
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-pie-chart"></i> Membership Distribution</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="membershipChart" width="300" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-calendar-week"></i> Expiry Timeline</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <h4 class="text-danger">{{ membershipStats.expiring_7_days }}</h4>
+                                <small class="text-muted">Next 7 days</small>
+                            </div>
+                            <div class="col-4">
+                                <h4 class="text-warning">{{ membershipStats.expiring_30_days }}</h4>
+                                <small class="text-muted">Next 30 days</small>
+                            </div>
+                            <div class="col-4">
+                                <h4 class="text-info">{{ membershipStats.expired }}</h4>
+                                <small class="text-muted">Already expired</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="progress" style="height: 20px;">
+                            {% set total = membershipStats.expiring_7_days + membershipStats.expiring_30_days + membershipStats.expired %}
+                            {% if total > 0 %}
+                                {% set percent7 = (membershipStats.expiring_7_days / total * 100)|round %}
+                                {% set percent30 = (membershipStats.expiring_30_days / total * 100)|round %}
+                                {% set percentExp = (membershipStats.expired / total * 100)|round %}
+                                <div class="progress-bar bg-danger" style="width: {{ percent7 }}%" title="Next 7 days: {{ membershipStats.expiring_7_days }}"></div>
+                                <div class="progress-bar bg-warning" style="width: {{ percent30 }}%" title="Next 30 days: {{ membershipStats.expiring_30_days }}"></div>
+                                <div class="progress-bar bg-info" style="width: {{ percentExp }}%" title="Expired: {{ membershipStats.expired }}"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Operations Tab -->
+    <div class="tab-pane fade" id="bulk" role="tabpanel">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-tools"></i> Bulk Membership Operations</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Automated Operations</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-warning" onclick="updateExpiredMemberships()">
+                                <i class="bi bi-clock-history"></i> Update Expired Status
+                            </button>
+                            <button class="btn btn-info" onclick="sendRenewalReminders()">
+                                <i class="bi bi-envelope"></i> Send Renewal Reminders
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Reports</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" onclick="generateMembershipReport()">
+                                <i class="bi bi-file-earmark-excel"></i> Export Membership Report
+                            </button>
+                            <button class="btn btn-primary" onclick="generateRenewalReport()">
+                                <i class="bi bi-calendar-check"></i> Renewal Forecast
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Renewal Modal -->
+<div class="modal fade" id="renewalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-arrow-clockwise"></i> Renew Membership</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="/genz/public/memberships/renew" id="renewalForm">
+                <div class="modal-body">
+                    <input type="hidden" name="member_id" id="renewal_member_id">
+                    
+                    <div class="mb-3">
+                        <strong id="renewal_member_name"></strong><br>
+                        <small class="text-muted">Current expiry: <span id="current_expiry"></span></small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="months" class="form-label">Renewal Period</label>
+                        <select class="form-select" name="months" id="months">
+                            <option value="1">1 Month</option>
+                            <option value="3">3 Months</option>
+                            <option value="6" selected>6 Months</option>
+                            <option value="12">12 Months</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Renew Membership</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showRenewalModal(memberId, memberName, currentExpiry) {
+    document.getElementById('renewal_member_id').value = memberId;
+    document.getElementById('renewal_member_name').textContent = memberName;
+    document.getElementById('current_expiry').textContent = new Date(currentExpiry).toLocaleDateString();
+    
+    new bootstrap.Modal(document.getElementById('renewalModal')).show();
+}
+
+function updateExpiredMemberships() {
+    if (confirm('This will update all expired memberships. Continue?')) {
+        // Add AJAX call to update expired memberships
+        alert('Feature coming soon!');
+    }
+}
+
+function sendRenewalReminders() {
+    if (confirm('Send renewal reminders to all expiring members?')) {
+        alert('Feature coming soon!');
+    }
+}
+
+function generateMembershipReport() {
+    alert('Membership report generation coming soon!');
+}
+
+function generateRenewalReport() {
+    alert('Renewal forecast coming soon!');
+}
+
+// Days filter
+document.getElementById('daysFilter').addEventListener('change', function() {
+    const days = this.value;
+    window.location.href = `/genz/public/memberships/expiring?days=${days}`;
+});
+</script>
+{% endblock %}
+
