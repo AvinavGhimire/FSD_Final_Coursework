@@ -1,0 +1,755 @@
+/* GenzFitness NEO-POP Design System v3.0 */
+:root {
+    /* Brand - High Contrast Palette */
+    --pop-blue: #2E5BFF;
+    --pop-pink: #FF2E97;
+    --pop-yellow: #F0FF00;
+    --pop-green: #00FF9D;
+    --pop-white: #FFFBEB;
+    /* Creamy White */
+    --pop-black: #000000;
+
+    /* Semantic mappings */
+    --primary: var(--pop-blue);
+    --secondary: var(--pop-pink);
+    --warning: var(--pop-yellow);
+    --success: var(--pop-green);
+    --danger: #FF0000;
+
+    /* Neutrals */
+    --background: var(--pop-white);
+    --surface: #FFFFFF;
+    --border: var(--pop-black);
+    --shadow: var(--pop-black);
+
+    /* Text */
+    --text-primary: #000000;
+    --text-secondary: #000000;
+    --text-muted: #333333;
+
+    /* Fonts */
+    --font-head: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+
+    /* Layout */
+    --map-bar-height: 80px;
+    --border-width: 3px;
+    --hard-shadow: 6px 6px 0px var(--shadow);
+    --soft-shadow: 4px 4px 0px var(--shadow);
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--background);
+    color: var(--text-primary);
+    line-height: 1.4;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-head);
+    font-weight: 800;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    background: var(--pop-yellow);
+    display: inline-block;
+    padding: 0 10px;
+    border: var(--border-width) solid var(--border);
+}
+
+a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+/* Base Utility for Neo-Pop */
+.pop-border {
+    border: var(--border-width) solid var(--border);
+}
+
+.pop-shadow {
+    box-shadow: var(--hard-shadow);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-head);
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.8em;
+    text-shadow: 0 0 5px rgba(0, 255, 157, 0.3);
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-left: 4px solid var(--primary);
+    padding-left: 15px;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+a:hover {
+    color: var(--cyber-blue);
+    text-shadow: 0 0 8px var(--cyber-blue);
+}
+
+/* --- Responsive Grid System (Bootstrap-compatible) --- */
+.container-fluid {
+    width: 100%;
+    padding: 0;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+.g-0>* {
+    padding: 0;
+}
+
+[class^="col-"] {
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+}
+
+@media (min-width: 768px) {
+    .col-md-2 {
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+    }
+
+    .col-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+        padding: 0 12px;
+    }
+
+    .col-md-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+        padding: 0 12px;
+    }
+
+    .col-md-6 {
+        padding: 0 12px;
+    }
+
+    .col-md-8 {
+        flex: 0 0 66.666667%;
+        max-width: 66.666667%;
+        padding: 0 12px;
+    }
+
+    .col-md-10 {
+        flex: 0 0 83.333333%;
+        max-width: 83.333333%;
+    }
+
+    .col-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 12px;
+    }
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-end {
+    text-align: right !important;
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.mt-2 {
+    margin-top: 0.5rem !important;
+}
+
+.mt-4 {
+    margin-top: 1.5rem !important;
+}
+
+.me-2 {
+    margin-right: 0.5rem !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+.p-2 {
+    padding: 0.5rem !important;
+}
+
+.p-3 {
+    padding: 1rem !important;
+}
+
+.p-4 {
+    padding: 1.5rem !important;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+.d-block {
+    display: block !important;
+}
+
+.gap-2 {
+    gap: 0.5rem !important;
+}
+
+/* --- Neo-Pop Components --- */
+
+/* The Map Bar (Navigation) */
+.map-bar {
+    background: var(--pop-white);
+    border: var(--border-width) solid var(--border);
+    margin: 20px;
+    display: flex;
+    overflow-x: auto;
+    padding: 10px;
+    gap: 15px;
+    position: relative;
+    box-shadow: var(--hard-shadow);
+}
+
+.map-item {
+    padding: 15px 25px;
+    border: var(--border-width) solid var(--border);
+    background: #FFFFFF;
+    font-family: var(--font-head);
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.map-item:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 4px 4px 0px var(--border);
+    background: var(--pop-yellow);
+}
+
+.map-item.active {
+    background: var(--pop-blue);
+    color: #FFFFFF;
+    transform: translate(-4px, -4px);
+    box-shadow: 6px 6px 0px var(--border);
+}
+
+/* Cards (Neo-Pop Blocks) */
+.card {
+    background: #FFFFFF;
+    border: var(--border-width) solid var(--border);
+    border-radius: 2px;
+    box-shadow: var(--hard-shadow);
+    margin-bottom: 30px;
+    position: relative;
+    transition: all 0.2s ease;
+    overflow: visible !important;
+}
+
+.card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px var(--border);
+}
+
+.card-header {
+    border-bottom: var(--border-width) solid var(--border);
+    padding: 1.5rem;
+    background: var(--pop-white);
+}
+
+/* Sticker Buttons (User request: position differently) */
+.btn-sticker {
+    position: absolute;
+    border: var(--border-width) solid var(--border);
+    background: var(--pop-pink);
+    color: #000000;
+    padding: 10px 20px;
+    font-weight: 900;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0px var(--border);
+    z-index: 5;
+    transition: all 0.1s ease;
+}
+
+.btn-sticker:hover {
+    background: var(--pop-blue);
+    color: #FFFFFF;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--border);
+}
+
+.btn-sticker:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px var(--border);
+}
+
+/* Positioning Stickers */
+.sticker-top-right {
+    top: -15px;
+    right: -15px;
+}
+
+.sticker-bottom-right {
+    bottom: -15px;
+    right: -15px;
+}
+
+.sticker-top-left {
+    top: -15px;
+    left: -15px;
+}
+
+/* Stats Cards (Pop Blocks) */
+.stats-card {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.stats-card.primary {
+    background: var(--pop-blue);
+    color: #FFFFFF;
+}
+
+.stats-card.success {
+    background: var(--pop-green);
+}
+
+.stats-card.info {
+    background: var(--pop-yellow);
+}
+
+.stats-card.warning {
+    background: var(--pop-pink);
+    color: #FFFFFF;
+}
+
+.stats-card h2 {
+    font-size: 4rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    margin: 0;
+}
+
+.stats-card h5 {
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+
+/* Tables (Neo-Pop Terminal) */
+.table-custom {
+    background: #FFFFFF;
+}
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    border: var(--border-width) solid var(--border);
+}
+
+th {
+    background: var(--pop-blue);
+    color: #FFFFFF;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 15px;
+    border-bottom: var(--border-width) solid var(--border);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+td {
+    padding: 15px;
+    border-bottom: 2px solid var(--border);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background: rgba(240, 255, 0, 0.05);
+    /* Very light yellow tint */
+}
+
+/* Badges (Blocky) */
+.badge {
+    border: 2px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 0;
+    text-transform: uppercase;
+    font-weight: 900;
+    font-size: 0.75rem;
+}
+
+.bg-info {
+    background: var(--pop-blue) !important;
+    color: #FFFFFF;
+}
+
+.bg-success {
+    background: var(--pop-green) !important;
+    color: #000000;
+}
+
+.bg-warning {
+    background: var(--pop-yellow) !important;
+    color: #000000;
+}
+
+.bg-danger {
+    background: var(--pop-pink) !important;
+    color: #FFFFFF;
+}
+
+/* The Map Bar (Top Nav) Container in Base */
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.content-area {
+    padding: 30px;
+    width: 100%;
+}
+
+/* Custom Button (Regular) */
+.btn {
+    border: var(--border-width) solid var(--border);
+    border-radius: 0;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 10px 25px;
+    transition: all 0.1s ease;
+    box-shadow: 4px 4px 0px var(--border);
+}
+
+.btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px var(--border);
+}
+
+.btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px var(--border);
+}
+
+/* Button Varieties (Neo-Pop) */
+.btn-primary,
+.btn-outline-primary {
+    background: var(--pop-blue) !important;
+    color: white !important;
+}
+
+.btn-success,
+.btn-outline-success {
+    background: var(--pop-green) !important;
+    color: black !important;
+}
+
+.btn-warning,
+.btn-outline-warning {
+    background: var(--pop-yellow) !important;
+    color: black !important;
+}
+
+.btn-danger,
+.btn-outline-danger {
+    background: var(--pop-pink) !important;
+    color: white !important;
+}
+
+.btn-secondary,
+.btn-outline-secondary {
+    background: #FFFFFF !important;
+    color: black !important;
+}
+
+.btn-info,
+.btn-outline-info {
+    background: var(--pop-blue) !important;
+    color: white !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .map-bar {
+        margin: 10px;
+        padding: 5px;
+    }
+
+    .map-item {
+        padding: 10px 15px;
+        font-size: 0.8rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
+
+/* Modal Styling (Neo-Pop) */
+.modal-content {
+    border: var(--border-width) solid var(--border);
+    border-radius: 0;
+    box-shadow: 10px 10px 0px var(--border);
+}
+
+.modal-header {
+    background: var(--pop-blue);
+    color: white;
+    border-bottom: var(--border-width) solid var(--border);
+}
+
+.modal-footer {
+    border-top: var(--border-width) solid var(--border);
+}
+
+/* Final cleanup and globals */
+.text-primary {
+    color: var(--pop-blue) !important;
+}
+
+.text-success {
+    color: var(--pop-green) !important;
+}
+
+.text-warning {
+    color: var(--pop-yellow) !important;
+}
+
+.text-danger {
+    color: var(--pop-pink) !important;
+}
+
+/* Content padding adjustment */
+.p-4 {
+    padding: var(--space-8) !important;
+}
+
+/* Desktop (1280px+) - Full layout */
+@media (min-width: 1280px) {
+    .main-content {
+        max-width: calc(100vw - var(--sidebar-width));
+    }
+}
+
+/* Laptop (1024px - 1279px) */
+@media (max-width: 1279px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Tablet (768px - 1023px) - Sidebar icons only */
+@media (max-width: 1023px) {
+    :root {
+        --sidebar-width: 80px;
+    }
+
+    .sidebar {
+        width: 80px;
+    }
+
+    .brand-section h4 span,
+    .brand-section small,
+    .nav-link span {
+        display: none;
+    }
+
+    .nav-link {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .nav-link i {
+        margin: 0;
+        width: auto;
+    }
+
+    .main-content {
+        margin-left: 80px;
+    }
+
+    .p-4 {
+        padding: var(--space-6) !important;
+    }
+}
+
+/* Mobile (< 768px) - Hidden sidebar with hamburger */
+@media (max-width: 767px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform var(--transition-base);
+        width: 280px;
+        max-width: 80vw;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+    }
+
+    .sidebar-backdrop.show {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .navbar {
+        padding: 0 var(--space-4);
+    }
+
+    .hamburger-menu {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        cursor: pointer;
+        margin-right: var(--space-3);
+    }
+
+    .hamburger-menu i {
+        font-size: 1.25rem;
+        color: var(--text-primary);
+    }
+
+    .p-4 {
+        padding: var(--space-4) !important;
+    }
+
+    .navbar-brand {
+        font-size: 1.125rem;
+    }
+
+    .col-md-2,
+    .col-md-3,
+    .col-md-4,
+    .col-md-6,
+    .col-md-8,
+    .col-md-10 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .table-responsive {
+        border-radius: var(--radius-sm);
+    }
+}
+
+/* Print styles */
+@media print {
+
+    .sidebar,
+    .navbar,
+    .btn,
+    .dropdown {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+}
