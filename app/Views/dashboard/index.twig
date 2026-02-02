@@ -10,7 +10,7 @@
         <div class="card stats-card primary">
             <h5 class="mb-0">Total Members</h5>
             <h2>{{ member_stats.total }}</h2>
-            <small>Active: {{ member_stats.active }}</small>
+            <p class="mb-0 fs-6">Active: {{ member_stats.active }}</p>
             <a href="{{ url('/members') }}" class="btn-sticker sticker-bottom-right">VIEW ALL</a>
         </div>
     </div>
@@ -19,7 +19,7 @@
         <div class="card stats-card success">
             <h5 class="mb-0">Trainers</h5>
             <h2>{{ trainer_stats.total }}</h2>
-            <small>Active Coaches</small>
+            <p class="mb-0 fs-6">Active Coaches</p>
             <a href="{{ url('/trainers') }}" class="btn-sticker sticker-bottom-right">ROSTER</a>
         </div>
     </div>
@@ -28,8 +28,8 @@
         <div class="card stats-card info">
             <h5 class="mb-0">Workouts</h5>
             <h2>{{ workout_plan_stats.total }}</h2>
-            <small>Active Programs</small>
-            <a href="/genz/public/workout-plans" class="btn-sticker sticker-bottom-right">PLANS</a>
+            <p class="mb-0 fs-6">Active Programs</p>
+            <a href="{{ url('/workout-plans') }}" class="btn-sticker sticker-bottom-right">PLANS</a>
         </div>
     </div>
     
@@ -37,8 +37,8 @@
         <div class="card stats-card warning">
             <h5 class="mb-0">Expiring</h5>
             <h2>{{ member_stats.expiring_soon }}</h2>
-            <small>Next 30 Days</small>
-            <a href="/genz/public/members?filter=expiring" class="btn-sticker sticker-bottom-right">ALERTS</a>
+            <p class="mb-0 fs-6">Next 30 Days</p>
+            <a href="{{ url('/members?filter=expiring') }}" class="btn-sticker sticker-bottom-right">ALERTS</a>
         </div>
     </div>
 </div>

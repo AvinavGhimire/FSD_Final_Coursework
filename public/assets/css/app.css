@@ -392,10 +392,12 @@ a:hover {
 
 .stats-card.success {
     background: var(--pop-green);
+    color: #000000;
 }
 
 .stats-card.info {
     background: var(--pop-yellow);
+    color: #000000;
 }
 
 .stats-card.warning {
