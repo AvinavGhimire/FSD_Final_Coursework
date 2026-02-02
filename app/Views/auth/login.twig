@@ -9,77 +9,145 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background: var(--pop-white);
     }
     .login-card {
         width: 100%;
-        max-width: 450px;
+        max-width: 500px;
         background: #FFFFFF;
+        border: 4px solid var(--pop-black);
+        box-shadow: 12px 12px 0px rgba(0,0,0,0.3);
     }
     .login-header {
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
         background: var(--pop-black);
         color: white;
-        padding: 20px;
-        margin: -48px -48px 2rem -48px; /* Offset card padding */
+        padding: 3rem 2rem 2rem 2rem;
+        margin: -48px -48px 3rem -48px;
     }
     .login-icon {
-        width: 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
         background: var(--pop-yellow);
-        border: 4px solid var(--pop-black);
+        border: 5px solid var(--pop-black);
         display: flex;
         align-items: center;
         justify-content: center;
         color: black;
-        font-size: 32px;
-        margin: 0 auto 1rem;
-        box-shadow: 6px 6px 0px rgba(255,255,255,0.2);
+        font-size: 48px;
+        margin: 0 auto 1.5rem;
+        box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+    }
+    .login-header h4 {
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        letter-spacing: 2px;
+    }
+    .login-header p {
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        color: #cccccc;
+    }
+    .form-label {
+        font-weight: 900;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+    }
+    .form-control {
+        border: 3px solid var(--pop-black);
+        border-radius: 0;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        background: #FFFFFF;
+    }
+    .form-control:focus {
+        border-color: var(--pop-blue);
+        box-shadow: 0 0 0 0.2rem rgba(46, 91, 255, 0.25);
+        outline: none;
+    }
+    .form-control::placeholder {
+        color: #999999;
+        font-weight: 600;
+    }
+    .login-button {
+        background: var(--pop-blue) !important;
+        color: white !important;
+        font-weight: 900;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        border: 3px solid var(--pop-black);
+        padding: 1rem !important;
+        margin-bottom: 1.5rem !important;
+        box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+    .login-button:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0px rgba(0,0,0,0.3);
+    }
+    .login-button:active {
+        transform: translate(3px, 3px);
+        box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+    }
+    .alert-danger {
+        background: #ffebee;
+        border: 3px solid #d32f2f;
+        color: #d32f2f;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .disclaimer-text {
+        text-align: center;
+        font-weight: 900;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        color: var(--text-primary);
+        margin-top: 2rem;
     }
 </style>
 {% endblock %}
 
 {% block body_override %}
 <div class="login-wrapper">
-    <div class="card login-card p-4 p-md-5 pop-border pop-shadow">
-        <div class="card-body">
-            <div class="login-header">
-                <div class="login-icon">
-                    <i class="fas fa-dumbbell"></i>
-                </div>
-                <h4 class="mb-0 text-white">SYSTEM ACCESS</h4>
-                <p class="small mb-0 text-white-50">INITIALIZING GENZFITNESS PROTOCOL</p>
+    <div class="login-card p-5">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <h4 class="mb-0">SYSTEM ACCESS</h4>
+            <p class="mb-0">INITIALIZING GENZFITNESS PROTOCOL</p>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url('/login') }}">
+            <input type="hidden" name="csrf_token" value="{{ auth.csrf_token }}">
+            
+            <div class="mb-4">
+                <label class="form-label">IDENTIFIER (EMAIL)</label>
+                <input type="email" name="email" class="form-control" placeholder="USER@DOMAIN.COM" value="{{ email }}" required autofocus>
             </div>
 
-            {% if error %}
-                <div class="alert alert-danger mb-4 pop-border pop-shadow">
-                    <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
-                </div>
-            {% endif %}
+            <div class="mb-5">
+                <label class="form-label">PASSCODE</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
 
-            <form method="POST" action="{{ url('/login') }}">
-                <input type="hidden" name="csrf_token" value="{{ auth.csrf_token }}">
-                
-                <div class="mb-4">
-                    <label class="form-label">IDENTIFIER (EMAIL)</label>
-                    <input type="email" name="email" class="form-control" placeholder="USER@DOMAIN.COM" value="{{ email }}" required autofocus>
-                </div>
-
-                <div class="mb-5">
-                    <label class="form-label">PASSCODE</label>
-                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
-                </div>
-
-                <div class="position-relative">
-                   <button type="submit" class="btn w-100 py-3 mb-4" style="background: var(--pop-blue); color: white;">ENTER SYSTEM</button>
-                   <div class="btn-sticker sticker-top-right" style="background: var(--pop-yellow); pointer-events: none;">SECURE</div>
-                </div>
-                
-                <div class="text-center mt-2">
-                    <small class="fw-bold">UNAUTHORIZED ACCESS PROHIBITED</small>
-                </div>
-            </form>
-        </div>
+            <div class="position-relative">
+                <button type="submit" class="btn login-button w-100">ENTER SYSTEM</button>
+                <div class="btn-sticker sticker-top-right" style="background: var(--pop-yellow); pointer-events: none; font-weight: 900;">SECURE</div>
+            </div>
+            
+            <p class="disclaimer-text">UNAUTHORIZED ACCESS PROHIBITED</p>
+        </form>
     </div>
 </div>
 {% endblock %}
