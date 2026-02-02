@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../includes/path-helpers.php';
 
 use App\Core\Router;
 use App\Core\Auth;
@@ -25,14 +26,9 @@ $publicRoutes = ['/login', '/logout'];
 
 // Check auth for non-public routes
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-// Dynamically detect base path
-$scriptName = $_SERVER['SCRIPT_NAME'];
-$basePath = str_replace('\\', '/', dirname($scriptName));
-if ($basePath === '/') {
-    $basePath = '';
-}
 
-// Store base path for use in views
+// Dynamically detect and store base path
+$basePath = getBasePath();
 $_SERVER['APP_BASE_PATH'] = $basePath;
 
 // Normalize URI

@@ -15,6 +15,23 @@ class Controller
     {
         $loader = new FilesystemLoader(__DIR__ . '/../Views');
         $this->twig = new Environment($loader);
+        
+        // Add Twig functions for URL generation
+        $this->twig->addFunction(new \Twig\TwigFunction('url', function($path = '/') {
+            $basePath = $_SERVER['APP_BASE_PATH'] ?? '';
+            if (!str_starts_with($path, '/')) {
+                $path = '/' . $path;
+            }
+            return $basePath . $path;
+        }));
+        
+        $this->twig->addFunction(new \Twig\TwigFunction('asset', function($assetPath) {
+            $basePath = $_SERVER['APP_BASE_PATH'] ?? '';
+            if (str_starts_with($assetPath, '/')) {
+                $assetPath = substr($assetPath, 1);
+            }
+            return $basePath . '/assets/' . $assetPath;
+        }));
     }
 
     protected function view($view, $data = [])

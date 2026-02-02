@@ -13,20 +13,20 @@
             <div class="col-md-4">
                 <h6 class="text-muted">Dashboard Routes</h6>
                 <div class="list-group mb-3">
-                    <a href="/genz/public/" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-house"></i> Dashboard (/)
                     </a>
-                    <a href="/genz/public/dashboard" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/dashboard') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-speedometer2"></i> Dashboard (/dashboard)
                     </a>
                 </div>
                 
                 <h6 class="text-muted">Member Routes</h6>
                 <div class="list-group mb-3">
-                    <a href="/genz/public/members" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/members') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-people"></i> Members List
                     </a>
-                    <a href="/genz/public/members/create" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/members/create') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-plus"></i> Create Member
                     </a>
                 </div>
@@ -35,20 +35,20 @@
             <div class="col-md-4">
                 <h6 class="text-muted">Trainer Routes</h6>
                 <div class="list-group mb-3">
-                    <a href="/genz/public/trainers" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/trainers') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-person-badge"></i> Trainers List
                     </a>
-                    <a href="/genz/public/trainers/create" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/trainers/create') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-plus"></i> Create Trainer
                     </a>
                 </div>
                 
                 <h6 class="text-muted">Workout Plan Routes</h6>
                 <div class="list-group mb-3">
-                    <a href="/genz/public/workout-plans" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/workout-plans') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-clipboard-check"></i> Workout Plans
                     </a>
-                    <a href="/genz/public/workout-plans/create" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/workout-plans/create') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-plus"></i> Create Plan
                     </a>
                 </div>
@@ -58,14 +58,14 @@
                 <h6 class="text-muted">Other Routes</h6>
                 <div class="list-group mb-3">
 
-                    <a href="/genz/public/memberships" class="list-group-item list-group-item-action">
+                    <a href="{{ url('/memberships') }}" class="list-group-item list-group-item-action">
                         <i class="bi bi-card-checklist"></i> Memberships
                     </a>
                 </div>
                 
                 <h6 class="text-muted">Test Routes</h6>
                 <div class="list-group mb-3">
-                    <a href="/genz/public/non-existent" class="list-group-item list-group-item-action list-group-item-warning">
+                    <a href="{{ url('/non-existent') }}" class="list-group-item list-group-item-action list-group-item-warning">
                         <i class="bi bi-exclamation-triangle"></i> Test 404 Error
                     </a>
                 </div>

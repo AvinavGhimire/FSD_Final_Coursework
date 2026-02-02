@@ -10,7 +10,7 @@
         <p class="text-muted">Manage gym members and their memberships</p>
     </div>
     <div>
-        <a href="/genz/public/members/create" class="btn btn-primary">
+        <a href="{{ url('/members/create') }}" class="btn btn-primary">
             <i class="bi bi-person-plus"></i> Add New Member
         </a>
     </div>
@@ -22,7 +22,7 @@
         <h6 class="mb-0"><i class="bi bi-search"></i> Search & Filter</h6>
     </div>
     <div class="card-body">
-        <form method="GET" action="/genz/public/members/search" class="row g-3">
+        <form method="GET" action="{{ url('/members/search') }}" class="row g-3">
             <div class="col-md-3">
                 <label for="name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="name" name="name" placeholder="Search by name" value="{{ params.name }}">
@@ -53,7 +53,7 @@
                 <button type="submit" class="btn btn-outline-primary">
                     <i class="bi bi-search"></i> Search
                 </button>
-                <a href="/genz/public/members" class="btn btn-outline-secondary">
+                <a href="{{ url('/members') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-clockwise"></i> Reset
                 </a>
             </div>
@@ -119,10 +119,10 @@
                         </td>
                         <td class="text-center">
                             <div class="btn-group" role="group">
-                                <a href="/genz/public/members/view?id={{ member.id }}" class="btn btn-sm btn-outline-primary" title="View">
+                                <a href="{{ url('/members/view?id=' ~ member.id) }}" class="btn btn-sm btn-outline-primary" title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="/genz/public/members/edit?id={{ member.id }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                <a href="{{ url('/members/edit?id=' ~ member.id) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <button class="btn btn-sm btn-outline-danger" title="Delete" 
@@ -151,7 +151,7 @@
 <script>
 function deleteMember(id, name) {
     if (confirm(`Are you sure you want to delete member "${name}"? This action cannot be undone.`)) {
-        fetch('/genz/public/members/delete', {
+        fetch(window.APP_BASE_PATH + '/members/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

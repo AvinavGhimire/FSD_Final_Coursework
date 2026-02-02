@@ -11,7 +11,7 @@
             <h5 class="mb-0">Total Members</h5>
             <h2>{{ member_stats.total }}</h2>
             <small>Active: {{ member_stats.active }}</small>
-            <a href="/genz/public/members" class="btn-sticker sticker-bottom-right">VIEW ALL</a>
+            <a href="{{ url('/members') }}" class="btn-sticker sticker-bottom-right">VIEW ALL</a>
         </div>
     </div>
     
@@ -20,7 +20,7 @@
             <h5 class="mb-0">Trainers</h5>
             <h2>{{ trainer_stats.total }}</h2>
             <small>Active Coaches</small>
-            <a href="/genz/public/trainers" class="btn-sticker sticker-bottom-right">ROSTER</a>
+            <a href="{{ url('/trainers') }}" class="btn-sticker sticker-bottom-right">ROSTER</a>
         </div>
     </div>
     
@@ -81,7 +81,7 @@
                     </table>
                 </div>
             </div>
-            <a href="/genz/public/members/create" class="btn-sticker sticker-top-right" style="background: var(--pop-yellow);">+ NEW MEMBER</a>
+            <a href="{{ url('/members/create') }}" class="btn-sticker sticker-top-right" style="background: var(--pop-yellow);">+ NEW MEMBER</a>
         </div>
     </div>
 
@@ -93,13 +93,13 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-3">
-                    <a href="/genz/public/trainers/create" class="btn w-100" style="background: white;">
+                    <a href="{{ url('/trainers/create') }}" class="btn w-100" style="background: white;">
                         <i class="fas fa-plus-circle me-2"></i> Add Trainer
                     </a>
-                    <a href="/genz/public/workout-plans/create" class="btn w-100" style="background: white;">
+                    <a href="{{ url('/workout-plans/create') }}" class="btn w-100" style="background: white;">
                         <i class="fas fa-clipboard-list me-2"></i> New Workout Plan
                     </a>
-                    <a href="/genz/public/memberships/create" class="btn w-100" style="background: white;">
+                    <a href="{{ url('/memberships/create') }}" class="btn w-100" style="background: white;">
                         <i class="fas fa-id-card me-2"></i> New Membership
                     </a>
                 </div>

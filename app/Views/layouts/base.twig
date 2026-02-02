@@ -20,11 +20,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="/genz/public/assets/css/app.css" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     {% block styles %}{% endblock %}
     
     <script>
-        window.APP_BASE_PATH = '/genz/public';
+        window.APP_BASE_PATH = '{{ base_path }}';
     </script>
 </head>
 <body class="pop-theme">
@@ -35,19 +35,19 @@
             <div class="map-item brand" style="background: var(--pop-blue); color: white; cursor: default;">
                 <i class="fas fa-dumbbell me-2"></i> genz<span>FITNESS</span>
             </div>
-            <a href="/genz/public/dashboard" class="map-item {% if current_page == 'dashboard' %}active{% endif %}">
+            <a href="{{ url('/dashboard') }}" class="map-item {% if current_page == 'dashboard' %}active{% endif %}">
                 <i class="fas fa-chart-line me-1"></i> Dashboard
             </a>
-            <a href="/genz/public/members" class="map-item {% if current_page == 'members' %}active{% endif %}">
+            <a href="{{ url('/members') }}" class="map-item {% if current_page == 'members' %}active{% endif %}">
                 <i class="fas fa-users me-1"></i> Members
             </a>
-            <a href="/genz/public/trainers" class="map-item {% if current_page == 'trainers' %}active{% endif %}">
+            <a href="{{ url('/trainers') }}" class="map-item {% if current_page == 'trainers' %}active{% endif %}">
                 <i class="fas fa-user-tie me-1"></i> Trainers
             </a>
-            <a href="/genz/public/workout-plans" class="map-item {% if current_page == 'workout_plans' %}active{% endif %}">
+            <a href="{{ url('/workout-plans') }}" class="map-item {% if current_page == 'workout_plans' %}active{% endif %}">
                 <i class="fas fa-clipboard-list me-1"></i> Programs
             </a>
-            <a href="/genz/public/memberships" class="map-item {% if current_page == 'memberships' %}active{% endif %}">
+            <a href="{{ url('/memberships') }}" class="map-item {% if current_page == 'memberships' %}active{% endif %}">
                 <i class="fas fa-id-card me-1"></i> Memberships
             </a>
             
@@ -55,7 +55,7 @@
                 {% if auth.check %}
                     <span class="badge bg-warning" style="border: 2px solid black;">{{ auth.user.name }}</span>
                 {% endif %}
-                <a href="/genz/public/logout" class="map-item" style="background: var(--pop-pink); color: white;">
+                <a href="{{ url('/logout') }}" class="map-item" style="background: var(--pop-pink); color: white;">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
@@ -92,7 +92,7 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/genz/public/assets/js/app.js"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

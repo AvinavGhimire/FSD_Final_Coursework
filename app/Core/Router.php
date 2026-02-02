@@ -32,25 +32,32 @@ class Router
     public function dispatch($uri, $method)
     {
         $path = parse_url($uri, PHP_URL_PATH);
-        $originalPath = $path;
         
-        // Get dynamic base path from server variable
+        // Get base path from server variable
         $basePath = $_SERVER['APP_BASE_PATH'] ?? '';
+        
+        // Strip base path from the beginning if present
         if (!empty($basePath) && strpos($path, $basePath) === 0) {
             $path = substr($path, strlen($basePath));
         }
-        // If path is empty or just a slash, set it to root
-        if ($path === '' || $path === '/') {
+        
+        // Normalize path
+        if ($path === '' || $path === null) {
             $path = '/';
+        }
+        
+        // Remove query string if present
+        if (strpos($path, '?') !== false) {
+            $path = substr($path, 0, strpos($path, '?'));
         }
 
         if (!isset($this->routes[$method][$path])) {
-            echo "Route not found for $method $path<br>";
             http_response_code(404);
             echo $this->twig->render('errors/404.twig', [
                 'title' => '404 - Page Not Found',
                 'uri' => $uri,
-                'method' => $method
+                'method' => $method,
+                'requested_path' => $path
             ]);
             return;
         }

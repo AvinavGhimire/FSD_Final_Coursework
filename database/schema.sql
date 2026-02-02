@@ -1,8 +1,8 @@
 -- Fitness Club Membership Management System Database Schema
 -- Create database and table structure
 
-CREATE DATABASE IF NOT EXISTS fitness_club_db;
-USE fitness_club_db;
+CREATE DATABASE IF NOT EXISTS np02cs4a240013;
+USE np02cs4a240013;
 
 -- Members table
 CREATE TABLE IF NOT EXISTS members (

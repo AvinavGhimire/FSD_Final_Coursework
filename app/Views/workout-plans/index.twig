@@ -9,7 +9,7 @@
         <h4 class="mb-0">Workout Plan Management</h4>
         <p class="text-muted">Create and manage personalized workout plans</p>
     </div>
-    <a href="/genz/public/workout-plans/create" class="btn btn-primary">
+    <a href="{{ url('/workout-plans/create') }}" class="btn btn-primary">
         <i class="bi bi-plus"></i> New Workout Plan
     </a>
 </div>
@@ -17,7 +17,7 @@
 <!-- Search and Filter -->
 <div class="card mb-4">
     <div class="card-body">
-        <form method="GET" action="/genz/public/workout-plans" class="row g-3">
+        <form method="GET" action="{{ url('/workout-plans') }}" class="row g-3">
             <div class="col-md-3">
                 <label class="form-label">Search Plans</label>
                 <input type="text" class="form-control" name="search" value="{{ searchTerm|default('') }}" 
@@ -56,7 +56,7 @@
                 <button type="submit" class="btn btn-outline-primary">
                     <i class="bi bi-search"></i> Search
                 </button>
-                <a href="/genz/public/workout-plans" class="btn btn-outline-secondary">
+                <a href="{{ url('/workout-plans') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-clockwise"></i> Reset
                 </a>
             </div>
@@ -213,10 +213,10 @@
                         </td>
                         <td class="text-center">
                             <div class="btn-group" role="group">
-                                <a href="/genz/public/workout-plans/view?id={{ plan.id }}" class="btn btn-sm btn-outline-primary" title="View Plan">
+                                <a href="{{ url('/workout-plans/view?id=' ~ plan.id) }}" class="btn btn-sm btn-outline-primary" title="View Plan">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="/genz/public/workout-plans/edit?id={{ plan.id }}" class="btn btn-sm btn-outline-warning" title="Edit Plan">
+                                <a href="{{ url('/workout-plans/edit?id=' ~ plan.id) }}" class="btn btn-sm btn-outline-warning" title="Edit Plan">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <button class="btn btn-sm btn-outline-danger" title="Delete Plan" 
@@ -232,7 +232,7 @@
                             <i class="bi bi-clipboard-x fs-1 d-block mb-2 opacity-50"></i>
                             No workout plans found
                             <br>
-                            <a href="/genz/public/workout-plans/create" class="btn btn-primary mt-2">
+                            <a href=\"{{ url('/workout-plans/create') }}\" class=\"btn btn-primary mt-2\">
                                 <i class="bi bi-plus"></i> Create Your First Plan
                             </a>
                         </td>
@@ -380,7 +380,7 @@ function bulkDelete() {
 
 function confirmDelete(planId, planName) {
     if (confirm(`Are you sure you want to delete the workout plan "${planName}"? This action cannot be undone.`)) {
-        fetch('/genz/public/workout-plans/delete', {
+        fetch(window.APP_BASE_PATH + '/workout-plans/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

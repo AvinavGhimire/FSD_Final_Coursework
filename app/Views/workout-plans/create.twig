@@ -7,8 +7,8 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/genz/public/dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="/genz/public/workout-plans">Workout Plans</a></li>
+            <li class="breadcrumb-item"><a href="{{ url('/dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url('/workout-plans') }}">Workout Plans</a></li>
             <li class="breadcrumb-item active">Create Plan</li>
         </ol>
     </nav>
@@ -28,7 +28,7 @@
                 <h5 class="mb-0"><i class="bi bi-plus"></i> Create New Workout Plan</h5>
             </div>
             <div class="card-body">
-                <form method="POST" action="/genz/public/workout-plans/create" id="createPlanForm">
+                <form method="POST" action="{{ url('/workout-plans/create') }}" id="createPlanForm">
                     <!-- Basic Information -->
                     <div class="row mb-4">
                         <div class="col-12">
@@ -252,7 +252,7 @@
                         <div class="col-12">
                             <hr>
                             <div class="d-flex justify-content-between">
-                                <a href="/genz/public/workout-plans" class="btn btn-outline-secondary">
+                                <a href="{{ url('/workout-plans') }}" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-left"></i> Cancel
                                 </a>
                                 <div>
@@ -524,7 +524,7 @@ document.getElementById('createPlanForm').addEventListener('submit', function(e)
     
     const formData = new FormData(this);
     
-    fetch('/genz/public/workout-plans/create', {
+    fetch(window.APP_BASE_PATH + '/workout-plans/create', {
         method: 'POST',
         body: formData
     })

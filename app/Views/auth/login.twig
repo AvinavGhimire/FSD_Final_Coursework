@@ -57,7 +57,7 @@
                 </div>
             {% endif %}
 
-            <form method="POST" action="/genz/public/login">
+            <form method="POST" action="{{ url('/login') }}">
                 <input type="hidden" name="csrf_token" value="{{ auth.csrf_token }}">
                 
                 <div class="mb-4">

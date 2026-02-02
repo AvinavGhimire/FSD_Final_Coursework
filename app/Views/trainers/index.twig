@@ -10,7 +10,7 @@
         <p class="text-muted">Manage fitness trainers and their specializations</p>
     </div>
     <div>
-        <a href="/genz/public/trainers/create" class="btn btn-success">
+        <a href="{{ url('/trainers/create') }}" class="btn btn-success">
             <i class="bi bi-person-plus-fill"></i> Add New Trainer
         </a>
     </div>
@@ -132,10 +132,10 @@
                         <td>{{ trainer.hire_date|date("M d, Y") }}</td>
                         <td class="text-center">
                             <div class="btn-group" role="group">
-                                <a href="/genz/public/trainers/view?id={{ trainer.id }}" class="btn btn-sm btn-outline-primary" title="View">
+                                <a href="{{ url('/trainers/view?id=' ~ trainer.id) }}" class="btn btn-sm btn-outline-primary" title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="/genz/public/trainers/edit?id={{ trainer.id }}" class="btn btn-sm btn-outline-warning" title="Edit">
+                                <a href="{{ url('/trainers/edit?id=' ~ trainer.id) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <button class="btn btn-sm btn-outline-danger" title="Delete" 
@@ -212,7 +212,7 @@
 <script>
 function deleteTrainer(id, name) {
     if (confirm(`Are you sure you want to delete trainer "${name}"? This action cannot be undone.`)) {
-        fetch('/genz/public/trainers/delete', {
+        fetch(window.APP_BASE_PATH + '/trainers/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
