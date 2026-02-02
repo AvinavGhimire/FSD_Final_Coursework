@@ -1,0 +1,118 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}Create Membership - Fitness Club Management{% endblock %}
+{% block page_title %}Create New Membership{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">New Membership</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url('/memberships/store') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="member_id" class="form-label">Select Member *</label>
+                            <select class="form-select" name="member_id" id="member_id" required>
+                                <option value="">Choose a member...</option>
+                                {% for member in members %}
+                                <option value="{{ member.id }}">{{ member.first_name }} {{ member.last_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="membership_type" class="form-label">Membership Type *</label>
+                            <select class="form-select" name="membership_type" id="membership_type" required>
+                                <option value="">Select type...</option>
+                                <option value="Basic">Basic</option>
+                                <option value="Standard">Standard</option>
+                                <option value="Premium">Premium</option>
+                                <option value="VIP">VIP</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">Start Date *</label>
+                            <input type="date" class="form-control" name="start_date" id="start_date" 
+                                   value="{{ 'now'|date('Y-m-d') }}" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">End Date *</label>
+                            <input type="date" class="form-control" name="end_date" id="end_date" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Price ($)</label>
+                            <input type="number" class="form-control" name="price" id="price" 
+                                   step="0.01" min="0" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Create Membership</button>
+                        <a href="{{ url('/memberships') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-calculate end date when membership type changes
+    document.getElementById('membership_type').addEventListener('change', function() {
+        const startDate = document.getElementById('start_date').value;
+        const endDateField = document.getElementById('end_date');
+        const priceField = document.getElementById('price');
+        
+        if (!startDate) return;
+        
+        const start = new Date(startDate);
+        let months = 1;
+        let price = 0;
+        
+        switch (this.value) {
+            case 'Basic':
+                months = 1;
+                price = 50.00;
+                break;
+            case 'Standard':
+                months = 3;
+                price = 135.00;
+                break;
+            case 'Premium':
+                months = 6;
+                price = 240.00;
+                break;
+            case 'VIP':
+                months = 12;
+                price = 450.00;
+                break;
+        }
+        
+        const end = new Date(start);
+        end.setMonth(end.getMonth() + months);
+        
+        endDateField.value = end.toISOString().split('T')[0];
+        priceField.value = price.toFixed(2);
+    });
+    
+    // Update end date when start date changes
+    document.getElementById('start_date').addEventListener('change', function() {
+        const membershipType = document.getElementById('membership_type').value;
+        if (membershipType) {
+            document.getElementById('membership_type').dispatchEvent(new Event('change'));
+        }
+    });
+</script>
+{% endblock %}

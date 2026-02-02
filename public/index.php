@@ -78,6 +78,8 @@ $router->get('/trainers/view', 'TrainerController@show');
 
 // Membership routes
 $router->get('/memberships', 'MembershipController@index');
+$router->get('/memberships/create', 'MembershipController@create');
+$router->post('/memberships/store', 'MembershipController@store');
 $router->get('/memberships/expiring', 'MembershipController@expiring');
 $router->post('/memberships/renew', 'MembershipController@renew');
 
@@ -87,6 +89,7 @@ $router->get('/workout-plans/create', 'WorkoutPlanController@create');
 $router->post('/workout-plans/create', 'WorkoutPlanController@store');
 $router->get('/workout-plans/edit', 'WorkoutPlanController@edit');
 $router->post('/workout-plans/update', 'WorkoutPlanController@update');
+$router->post('/workout-plans/update-status', 'WorkoutPlanController@updateStatus');
 $router->post('/workout-plans/delete', 'WorkoutPlanController@delete');
 $router->get('/workout-plans/view', 'WorkoutPlanController@show');
 

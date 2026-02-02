@@ -174,21 +174,43 @@
                             </div>
                         </td>
                         <td>
-                            {% if plan.status == 'Active' %}
-                                {% set today = date() %}
-                                {% set startDate = date(plan.start_date) %}
-                                {% set endDate = date(plan.end_date) %}
-                                
-                                {% if today < startDate %}
-                                    <span class="badge bg-info">Upcoming</span>
-                                {% elseif today > endDate %}
-                                    <span class="badge bg-secondary">Completed</span>
-                                {% else %}
+                            <div class="d-flex align-items-center gap-2">
+                                {% if plan.status == 'Active' %}
                                     <span class="badge bg-success">Active</span>
+                                {% elseif plan.status == 'Completed' %}
+                                    <span class="badge bg-secondary">Completed</span>
+                                {% elseif plan.status == 'Cancelled' %}
+                                    <span class="badge bg-danger">Cancelled</span>
+                                {% elseif plan.status == 'Draft' %}
+                                    <span class="badge bg-warning">Draft</span>
                                 {% endif %}
-                            {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                            {% endif %}
+                                
+                                <!-- Quick status change dropdown -->
+                                {% if plan.status != 'Cancelled' %}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        {% if plan.status != 'Active' %}
+                                        <li><a class="dropdown-item" href="#" onclick="updateStatus({{ plan.id }}, 'Active')">
+                                            <i class="fas fa-play text-success"></i> Mark Active
+                                        </a></li>
+                                        {% endif %}
+                                        {% if plan.status != 'Completed' %}
+                                        <li><a class="dropdown-item" href="#" onclick="updateStatus({{ plan.id }}, 'Completed')">
+                                            <i class="fas fa-check text-secondary"></i> Mark Completed
+                                        </a></li>
+                                        {% endif %}
+                                        {% if plan.status != 'Cancelled' %}
+                                        <li><a class="dropdown-item" href="#" onclick="updateStatus({{ plan.id }}, 'Cancelled')">
+                                            <i class="fas fa-times text-danger"></i> Cancel Plan
+                                        </a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
                         </td>
                         <td>
                             {% set today = date() %}
@@ -397,6 +419,29 @@ function confirmDelete(planId, planName) {
         })
         .catch(error => {
             alert('Error deleting workout plan');
+        });
+    }
+}
+
+function updateStatus(planId, newStatus) {
+    if (confirm(`Are you sure you want to change the status to "${newStatus}"?`)) {
+        fetch(window.APP_BASE_PATH + '/workout-plans/update-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + planId + '&status=' + newStatus
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error updating status');
         });
     }
 }

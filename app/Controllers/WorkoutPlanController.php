@@ -12,6 +12,9 @@ class WorkoutPlanController extends Controller
 {
     public function index()
     {
+        // Update any expired plans to completed status first
+        WorkoutPlan::updateExpiredPlans();
+        
         $filters = [
             'search' => $_GET['search'] ?? null,
             'trainer_id' => $_GET['trainer_id'] ?? null,
@@ -174,6 +177,29 @@ class WorkoutPlanController extends Controller
         }
 
         $this->redirect('/workout-plans/view?id=' . $id);
+    }
+
+    public function updateStatus()
+    {
+        header('Content-Type: application/json');
+        
+        $id = $_POST['id'] ?? null;
+        $status = $_POST['status'] ?? null;
+        
+        if (!$id || !$status) {
+            echo json_encode(['success' => false, 'message' => 'ID and status are required']);
+            return;
+        }
+
+        try {
+            if (WorkoutPlan::updateStatus($id, $status)) {
+                echo json_encode(['success' => true, 'message' => 'Status updated successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to update status']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     public function delete()

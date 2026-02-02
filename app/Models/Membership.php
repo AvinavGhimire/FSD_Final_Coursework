@@ -158,4 +158,34 @@ class Membership
 
         return $stats;
     }
+
+    public static function create($data)
+    {
+        $db = Database::connect();
+        
+        // Check if member exists
+        $memberCheck = $db->prepare("SELECT id FROM members WHERE id = ?");
+        $memberCheck->execute([$data['member_id']]);
+        
+        if (!$memberCheck->fetch()) {
+            throw new \Exception('Member not found');
+        }
+        
+        // Update member with membership information
+        $stmt = $db->prepare(
+            "UPDATE members SET 
+             membership_type = ?, 
+             membership_start_date = ?, 
+             membership_expiry_date = ?,
+             status = 'Active'
+             WHERE id = ?"
+        );
+        
+        return $stmt->execute([
+            $data['membership_type'],
+            $data['start_date'],
+            $data['end_date'],
+            $data['member_id']
+        ]);
+    }
 }

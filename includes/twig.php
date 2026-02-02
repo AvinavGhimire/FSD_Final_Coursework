@@ -12,6 +12,7 @@ if (!is_file($baseDir . '/vendor/autoload.php')) {
 
 require_once $baseDir . '/vendor/autoload.php';
 require_once $baseDir . '/includes/functions.php';
+require_once $baseDir . '/includes/path-helpers.php';
 
 $loader = new \Twig\Loader\FilesystemLoader($baseDir . '/templates');
 $twig = new \Twig\Environment($loader, [
@@ -21,6 +22,8 @@ $twig = new \Twig\Environment($loader, [
 
 $twig->addFunction(new \Twig\TwigFunction('formatDate', 'formatDate'));
 $twig->addFunction(new \Twig\TwigFunction('isMembershipExpired', 'isMembershipExpired'));
+$twig->addFunction(new \Twig\TwigFunction('url', 'url'));
+$twig->addFunction(new \Twig\TwigFunction('asset', 'asset'));
 
 /**
  * Render a Twig template with data and output HTML.

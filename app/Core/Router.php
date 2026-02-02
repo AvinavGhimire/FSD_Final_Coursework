@@ -17,6 +17,11 @@ class Router
             'cache' => false, // Disable cache for development
             'debug' => true
         ]);
+        
+        // Register custom Twig functions
+        require_once __DIR__ . '/../../includes/path-helpers.php';
+        $this->twig->addFunction(new \Twig\TwigFunction('url', 'url'));
+        $this->twig->addFunction(new \Twig\TwigFunction('asset', 'asset'));
     }
 
     public function get($uri, $action)
@@ -30,7 +35,7 @@ class Router
     }
 
     public function dispatch($uri, $method)
-    {
+    { 
         $path = parse_url($uri, PHP_URL_PATH);
         
         // Get base path from server variable

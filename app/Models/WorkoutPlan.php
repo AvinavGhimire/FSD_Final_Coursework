@@ -154,6 +154,9 @@ class WorkoutPlan
 
     public static function getStats()
     {
+        // First, update any expired plans to completed status
+        self::updateExpiredPlans();
+        
         $db = Database::connect();
         $stats = [];
 
@@ -207,13 +210,11 @@ class WorkoutPlan
             $status = strtolower($params['status']);
 
             if ($status === 'active') {
-                // Active status in DB and not expired
-                $sql .= " AND wp.status = 'Active' AND wp.end_date >= CURDATE()";
+                $sql .= " AND wp.status = 'Active'";
             } elseif ($status === 'completed') {
-                // Explicitly completed OR Active but expired
-                $sql .= " AND (wp.status = 'Completed' OR (wp.status = 'Active' AND wp.end_date < CURDATE()))";
+                $sql .= " AND wp.status = 'Completed'";
             } elseif ($status === 'inactive') {
-                // Not Active and Not Completed (e.g. Draft, Inactive)
+                // Not Active and Not Completed (e.g. Draft, Cancelled)
                 $sql .= " AND wp.status NOT IN ('Active', 'Completed')";
             } else {
                 $sql .= " AND wp.status = ?";
@@ -241,5 +242,33 @@ class WorkoutPlan
         $stmt = $db->prepare($sql);
         $stmt->execute($bindings);
         return $stmt->fetchAll();
+    }
+
+    /**
+     * Automatically mark expired workout plans as completed
+     */
+    public static function updateExpiredPlans()
+    {
+        $db = Database::connect();
+        $stmt = $db->prepare(
+            "UPDATE workout_plans SET status = 'Completed' 
+             WHERE status = 'Active' AND end_date < CURDATE()"
+        );
+        return $stmt->execute();
+    }
+
+    /**
+     * Update workout plan status
+     */
+    public static function updateStatus($id, $status)
+    {
+        $validStatuses = ['Active', 'Completed', 'Cancelled', 'Draft'];
+        if (!in_array($status, $validStatuses)) {
+            throw new \Exception('Invalid status. Must be one of: ' . implode(', ', $validStatuses));
+        }
+
+        $db = Database::connect();
+        $stmt = $db->prepare("UPDATE workout_plans SET status = ? WHERE id = ?");
+        return $stmt->execute([$status, $id]);
     }
 }
