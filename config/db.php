@@ -6,8 +6,8 @@
  */
 
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'np02cs4a240013');
+define('DB_PASS', 'KKjh9O5r2t');
 define('DB_NAME', 'fitness_club_db');
 
 /**
